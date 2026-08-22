@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Privacy Policy - Blink Bill</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    line-height: 1.7;
+    color: #1a1a1a;
+    background: #ffffff;
+  }
+  h1 {
+    color: #000;
+    border-bottom: 3px solid #d4af37;
+    padding-bottom: 12px;
+  }
+  h2 {
+    color: #1a1a1a;
+    margin-top: 32px;
+    font-size: 20px;
+  }
+  .updated {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  ul {
+    padding-left: 20px;
+  }
+  li {
+    margin-bottom: 8px;
+  }
+  .contact-box {
+    background: #f8f8f8;
+    border-left: 4px solid #d4af37;
+    padding: 16px 20px;
+    margin-top: 16px;
+    border-radius: 4px;
+  }
+  footer {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid #ddd;
+    font-size: 13px;
+    color: #888;
+  }
+  .back-btn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 999;
+    background: #006400;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  }
+  .back-btn:hover { background: #009900; }
+</style>
+</head>
+<body>
+
+<button class="back-btn" onclick="location.href='index.html'">← Back to App</button>
+
+<h1>Privacy Policy — Blink Bill</h1>
+<p class="updated">Last Updated: August 22, 2026</p>
+
+<p>Blink Bill ("we", "our", "the app") is a billing and business management application built for shop owners and small businesses in India. This Privacy Policy explains how we handle information when you use our app.</p>
+
+<h2>1. Information We Collect</h2>
+<p>Blink Bill is designed as a local-first app: your day-to-day business data stays on your own device. The information handled by the app includes:</p>
+<ul>
+  <li><strong>Account Credentials:</strong> When you register, your username and shop details are stored along with your password/PIN <strong>only as a one-way SHA-256 hash</strong>. We never store or see your actual password or PIN.</li>
+  <li><strong>Shop &amp; Business Details:</strong> Shop name, address, mobile number, and settings you enter to personalize your billing.</li>
+  <li><strong>Billing Data:</strong> Products, prices, quantities, discounts, GST/tax details, payment mode (cash/online), and generated bills.</li>
+  <li><strong>Customer Information:</strong> Customer names, contact numbers, and purchase history that you choose to save for your own record-keeping.</li>
+  <li><strong>Stock &amp; Inventory Data:</strong> Product details, barcodes, and QR/barcode codes you generate for inventory management.</li>
+  <li><strong>Expense Records:</strong> Business expenses you log within the app.</li>
+  <li><strong>UPI Payment Details:</strong> UPI IDs and optional bank labels you configure, plus an optional QR image you may upload — stored locally to generate payment QR codes inside the app. We do not process, store, or have access to your actual money transactions — payments happen directly through your chosen UPI app (Google Pay, PhonePe, Paytm, etc.).</li>
+  <li><strong>Camera Access:</strong> Used only to scan product barcodes. Camera footage is processed live in memory and is not stored or transmitted.</li>
+</ul>
+
+<h2>2. How We Store Your Data</h2>
+<p>Your data is stored at three levels, all designed to keep you in control:</p>
+<ul>
+  <li><strong>On-Device (Primary):</strong> Your billing records, inventory, customer history, expenses, and UPI settings are stored locally on your device using browser storage (localStorage). The app works fully offline for these features.</li>
+  <li><strong>On-Device Archive (IndexedDB):</strong> To keep the app fast, bills older than 2 months are automatically moved from active storage to a local archive database (IndexedDB) on the same device. Archived bills remain visible in History and Dashboard, and remain included in backups. Nothing leaves your device during archiving.</li>
+  <li><strong>Cloud (Login Accounts Only):</strong> Your login account record — username, hashed password/PIN, and shop name/address/mobile — is stored securely in Google Firebase (Firestore) so you can sign in across sessions. Your bills, inventory, customers, and expenses are <strong>not</strong> uploaded to the cloud.</li>
+</ul>
+
+<h2>3. Backup &amp; Restore</h2>
+<ul>
+  <li>The Excel Backup feature lets you export all of your data (Inventory, Bills including archived bills, and Expenses) as a spreadsheet file directly to your device.</li>
+  <li>You choose when to back up and where to keep the file. Backup files are never uploaded by us — you are responsible for storing them securely.</li>
+  <li>Restoring a backup replaces the data currently on your device; it does not affect any other user.</li>
+</ul>
+
+<h2>4. Third-Party Services</h2>
+<p>Blink Bill integrates with the following third-party services to provide core functionality:</p>
+<ul>
+  <li><strong>Google Firebase:</strong> Used solely to store login account records (username, password hash, shop contact details) described in Section 2, governed by Google's privacy policy.</li>
+  <li><strong>WhatsApp:</strong> When you use "Share via WhatsApp", bill details are passed to WhatsApp's own platform, subject to WhatsApp's privacy policy.</li>
+  <li><strong>UPI Apps:</strong> Payment QR codes generated inside Blink Bill open in your chosen UPI payment app, subject to their respective privacy policies.</li>
+  <li><strong>Code Libraries (CDNs):</strong> The app loads standard code libraries (e.g., charting, scanning, PDF/Excel tools) from public content delivery networks such as jsDelivr and cdnjs. These requests deliver code only — your business data is not sent to them.</li>
+</ul>
+
+<h2>5. Data Security</h2>
+<p>We take reasonable measures to protect the data handled within the app:</p>
+<ul>
+  <li>Passwords and PINs are never stored in readable form — only SHA-256 hashes are kept.</li>
+  <li>Business data stays on your device unless you explicitly export it yourself.</li>
+  <li>We recommend keeping your device locked, backing up regularly via the Excel Backup feature, and not sharing your login with unauthorized persons.</li>
+</ul>
+
+<h2>6. Notifications</h2>
+<p>If you allow notification permission (where available), Blink Bill may use it only for useful business alerts — for example low-stock reminders. You can turn notifications off anytime in your browser or device settings. We do not send advertising or promotional notifications.</p>
+
+<h2>7. Your Rights &amp; Control</h2>
+<ul>
+  <li>You can view, edit, or delete your business, product, and customer data at any time within the app.</li>
+  <li>You can export a full backup (including archived bills) or restore data whenever you wish.</li>
+  <li>You can uninstall the app at any time, which removes locally stored data depending on your device settings.</li>
+  <li>To request deletion of your cloud login record, contact us using the details below.</li>
+</ul>
+
+<h2>8. Children's Privacy</h2>
+<p>Blink Bill is intended for business use by shop owners and is not directed at children under 18. We do not knowingly collect data from children.</p>
+
+<h2>9. Changes to This Policy</h2>
+<p>We may update this Privacy Policy from time to time to reflect changes in our app or legal requirements. Updates will be posted on this page with a revised "Last Updated" date.</p>
+
+<h2>10. Contact Us</h2>
+<div class="contact-box">
+  <p>If you have any questions or concerns about this Privacy Policy or how your data is handled, please contact us at:</p>
+  <p><strong>Email:</strong>supportblinkbill@gmail.com</p>
+</div>
+
+<footer>
+  &copy; 2026 Blink Bill. All rights reserved.
+</footer>
+
+</body>
+</html>

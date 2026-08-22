@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Blink Bill - Seller Login</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="favicon.jpeg" type="image/png" />
+  <link rel="apple-touch-icon" href="logo192.png" />
+  <link rel="manifest" href="manifest.json" />
+  <!-- Loader Styles -->
+<style>
+  #bharatLoader {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #fff3e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 9999;
+    transition: opacity 1.2s ease-out;
+    opacity: 1;
+    color: white;
+    font-family: system-ui, sans-serif;
+  }
+
+  #bharatLoader .logo-container {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin-bottom: 35px;
+  }
+
+  #bharatLoader img.logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+    box-shadow: 0 8px 35px rgba(0,0,0,0.4);
+    animation: pulse 2.8s infinite ease-in-out;
+  }
+
+  #bharatLoader h1 {
+    font-size: 50px;
+    margin: 0 0 12px 0;
+    color: #1e6b2d;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+  }
+
+  #bharatLoader p {
+    font-size: 24px;
+    margin: 8px 0 0 0;
+    opacity: 0.95;
+    font-weight: 500;
+    color: #d84315;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.12); opacity: 0.92; }
+  }
+
+  /* Password show/hide toggle styles */
+  .password-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .password-wrapper input {
+    width: 100%;
+    padding-right: 45px;
+    box-sizing: border-box;
+  }
+
+  .toggle-eye {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 20px;
+    user-select: none;
+    opacity: 0.6;
+  }
+
+  .toggle-eye:hover {
+    opacity: 1;
+  }
+</style>
+</head>
+<body class="login-body">
+  <div id="bharatLoader">
+  <div class="logo-container">
+    <img src="favicon.jpeg" alt="Blink Bill Logo" class="logo">
+  </div>
+  
+  <h1>Blink Bill</h1>
+  <p>Loading, please wait... 🚀</p>
+</div>
+  <div class="login-container">
+    <h1>Blink Bill</h1>
+    <p class="tagline">Seller Login Only</p>
+
+    <div id="loginForm">
+      <input type="text" id="username" placeholder="Username" class="input" autocomplete="off"/>
+
+      <div class="password-wrapper">
+        <input type="password" id="password" placeholder="Password" class="input" />
+        <span class="toggle-eye" onclick="togglePassword('password', this)">👁️</span>
+      </div>
+
+      <div class="password-wrapper">
+        <input type="password" id="pin" placeholder="OR Enter PIN (optional)" class="input" />
+        <span class="toggle-eye" onclick="togglePassword('pin', this)">👁️</span>
+      </div>
+
+      <button onclick="login()" class="btn btn-green big" id="loginBtn">🔐 Login</button>
+      <button onclick="showRegister()" class="btn btn-blue big">📝 Register New Seller</button>
+      <button onclick="showRecover()" class="btn btn-accent big">❓ Forgot?</button>
+    </div>
+
+    <div id="registerForm" style="display:none;">
+      <h3>Create New Seller</h3>
+      <input type="text" id="regUser" placeholder="Username" class="input"/>
+
+      <div class="password-wrapper">
+        <input type="password" id="regPass" placeholder="Password" class="input"/>
+        <span class="toggle-eye" onclick="togglePassword('regPass', this)">👁️</span>
+      </div>
+
+      <div class="password-wrapper">
+        <input type="password" id="regPin" placeholder="Set 4-6 digit PIN (optional)" class="input"/>
+        <span class="toggle-eye" onclick="togglePassword('regPin', this)">👁️</span>
+      </div>
+
+      <input type="text" id="regShop" placeholder="Shop Name" class="input"/>
+      <input type="text" id="regAddr" placeholder="Address" class="input"/>
+      <input type="tel" id="regMobile" placeholder="Mobile Number" class="input"/>
+      <button onclick="register()" class="btn btn-green big" id="registerBtn">Create Account</button>
+      <button onclick="backToLogin()" class="btn btn-slate">↩️ Back</button>
+    </div>
+
+    <div id="recoverForm" style="display:none;">
+      <h3>Recover Account</h3>
+      <input type="tel" id="recoverMobile" placeholder="Mobile Number" class="input"/>
+      <button onclick="recover()" class="btn btn-green big" id="recoverBtn">🔍 Recover</button>
+      <button onclick="backToLogin()" class="btn btn-slate">↩️ Back</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      collection,
+      query,
+      where,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDsU2e8EPlOEwAE-jOXhwHbF7RXnX_MecI",
+      authDomain: "blink-bill-version1.firebaseapp.com",
+      projectId: "blink-bill-version1",
+      storageBucket: "blink-bill-version1.firebasestorage.app",
+      messagingSenderId: "699722725956",
+      appId: "1:699722725956:web:4711ca2cf4f6eca4e59a11"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window._db = db;
+    window._doc = doc;
+    window._getDoc = getDoc;
+    window._setDoc = setDoc;
+    window._collection = collection;
+    window._query = query;
+    window._where = where;
+    window._getDocs = getDocs;
+    window._firebaseReady = true;
+  </script>
+
+  <script>
+    function backToLogin(){ document.getElementById('loginForm').style.display='block'; document.getElementById('registerForm').style.display='none'; document.getElementById('recoverForm').style.display='none'; }
+    function showRegister(){ document.getElementById('loginForm').style.display='none'; document.getElementById('registerForm').style.display='block'; }
+    function showRecover(){ document.getElementById('loginForm').style.display='none'; document.getElementById('recoverForm').style.display='block'; }
+
+    // Toggle password visibility
+    function togglePassword(inputId, eyeEl) {
+      const input = document.getElementById(inputId);
+      if (input.type === "password") {
+        input.type = "text";
+        eyeEl.textContent = "🙈";
+      } else {
+        input.type = "password";
+        eyeEl.textContent = "👁️";
+      }
+    }
+
+    async function hashPass(pass) {
+      const enc = new TextEncoder();
+      const buf = await crypto.subtle.digest('SHA-256', enc.encode(pass));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
+
+    function waitForFirebase() {
+      return new Promise((resolve) => {
+        if (window._firebaseReady) return resolve();
+        const check = setInterval(() => {
+          if (window._firebaseReady) {
+            clearInterval(check);
+            resolve();
+          }
+        }, 50);
+      });
+    }
+
+    async function register(){
+      let u=document.getElementById('regUser').value.trim(), p=document.getElementById('regPass').value, pin=document.getElementById('regPin').value.trim(), s=document.getElementById('regShop').value.trim(), addr=document.getElementById('regAddr').value.trim(), m=document.getElementById('regMobile').value.trim();
+      if(!u||!p||!s||!m) return alert("All fields mandatory!");
+
+      const btn = document.getElementById('registerBtn');
+      btn.disabled = true; btn.textContent = "Creating...";
+
+      try {
+        await waitForFirebase();
+        const userRef = window._doc(window._db, "sellers", u);
+        const existing = await window._getDoc(userRef);
+        if (existing.exists()) {
+          alert("Username taken!");
+          return;
+        }
+
+        const passHash = await hashPass(p);
+        const pinHash = pin ? await hashPass(pin) : null;
+
+        await window._setDoc(userRef, {
+          user: u,
+          passHash: passHash,
+          pinHash: pinHash,
+          shop: { name: s, address: addr, mobile: m },
+          createdAt: new Date().toISOString()
+        });
+
+        alert("Account created! Login now");
+        backToLogin();
+      } catch (err) {
+        alert("Error creating account: " + err.message);
+      } finally {
+        btn.disabled = false; btn.textContent = "Create Account";
+      }
+    }
+
+    async function login(){
+      let u=document.getElementById('username').value.trim(), p=document.getElementById('password').value, pin=document.getElementById('pin').value.trim();
+      if(!u) return alert("Enter username!");
+
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = true; btn.textContent = "Logging in...";
+
+      try {
+        await waitForFirebase();
+        const userRef = window._doc(window._db, "sellers", u);
+        const snap = await window._getDoc(userRef);
+
+        if (!snap.exists()) {
+          alert("Wrong credentials!");
+          return;
+        }
+        const data = snap.data();
+
+        if (pin) {
+          const pinHash = await hashPass(pin);
+          if (data.pinHash === pinHash) {
+            localStorage.setItem("bharat_logged_in", u);
+            localStorage.setItem("owner", u);
+            location.href = "index.html";
+            return;
+          } else {
+            alert("Wrong PIN or username!");
+            return;
+          }
+        }
+
+        const passHash = await hashPass(p);
+        if (data.passHash === passHash) {
+          localStorage.setItem("bharat_logged_in", u);
+          localStorage.setItem("owner", u);
+          location.href = "index.html";
+        } else {
+          alert("Wrong credentials!");
+        }
+      } catch (err) {
+        alert("Login error: " + err.message);
+      } finally {
+        btn.disabled = false; btn.textContent = "Login";
+      }
+    }
+
+    async function recover(){
+      let m=document.getElementById('recoverMobile').value.trim();
+      if(!m) return alert("Enter mobile number!");
+
+      const btn = document.getElementById('recoverBtn');
+      btn.disabled = true; btn.textContent = "Searching...";
+
+      try {
+        await waitForFirebase();
+        const q = window._query(
+          window._collection(window._db, "sellers"),
+          window._where("shop.mobile", "==", m)
+        );
+        const results = await window._getDocs(q);
+
+        if (!results.empty) {
+          const found = results.docs[0].data();
+          alert(`Username: ${found.user}\nIf you forgot your password or PIN, please re-register or contact support.`);
+        } else {
+          alert("No account found!");
+        }
+      } catch (err) {
+        alert("Recovery error: " + err.message);
+      } finally {
+        btn.disabled = false; btn.textContent = "Recover";
+      }
+    }
+  </script>
+
+  <!-- LOADER JS -->
+<script>
+  window.addEventListener("load", () => {
+    const loader = document.getElementById("bharatLoader");
+    if (!loader) return;
+    setTimeout(() => {
+      loader.style.opacity = "0";
+      setTimeout(() => {
+        if (loader && loader.parentNode) {
+          loader.parentNode.removeChild(loader);
+        }
+      }, 1300);
+    }, 1800);
+  });
+
+  setTimeout(() => {
+    const loader = document.getElementById("bharatLoader");
+    if (loader && loader.parentNode) {
+      loader.style.opacity = "0";
+      setTimeout(() => {
+        if (loader.parentNode) loader.parentNode.removeChild(loader);
+      }, 1000);
+    }
+  }, 6000);
+</script>
+</body>
+</html>

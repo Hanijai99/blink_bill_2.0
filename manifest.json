@@ -1,0 +1,24 @@
+{
+  "id": "/",
+  "name": "Blink Bill",
+  "short_name": "BlinkBill",
+  "description": "Fast & easy billing app for Indian shops",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#120f03",
+  "theme_color": "#006400",
+  "lang": "en-IN",
+  "icons": [
+    { "src": "logo192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "logo512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "logo512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "screenshot-desktop2.png", "sizes": "1280x800", "type": "image/png", "form_factor": "wide" },
+    { "src": "screenshot-mobile1.png", "sizes": "750x1334", "type": "image/png", "form_factor": "narrow" },
+    { "src": "screenshot-mobile2.png", "sizes": "750x1334", "type": "image/png", "form_factor": "narrow" }
+  ],
+  "categories": ["business", "finance", "productivity"]
+}

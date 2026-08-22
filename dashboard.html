@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Blink Bill Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="utils.js"></script>
+  <style>
+    /* ---------- Dashboard specific styles ---------- */
+    .dash-wrap { max-width:1100px; margin:24px auto; padding:0 14px 30px; }
+
+    /* Hero header */
+    .dash-hero {
+      background:linear-gradient(135deg,#14532d,#16a34a);
+      color:#fff; border-radius:22px; padding:26px 28px;
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:14px; margin-bottom:20px;
+      box-shadow:0 14px 36px rgba(20,83,45,.35);
+    }
+    .dash-hero h1 { color:#fff; text-align:left; font-size:1.65rem; margin:0; letter-spacing:.4px; }
+    .dash-hero .sub { opacity:.85; margin-top:5px; font-size:.92rem; }
+    .hero-actions { display:flex; gap:9px; flex-wrap:wrap; }
+    .hero-actions button { padding:11px 18px; font-size:.88rem; border-radius:11px; box-shadow:0 3px 10px rgba(0,0,0,.25); }
+    .btn-hero-light { background:rgba(255,255,255,.16) !important; backdrop-filter:blur(4px); }
+
+    /* Section cards grid */
+    .section-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
+    .section {
+      background:#fff; border:1px solid #e2e8f0; border-radius:18px;
+      padding:20px; box-shadow:0 2px 12px rgba(15,23,42,.06);
+      transition:transform .2s, box-shadow .2s;
+    }
+    .section:hover { transform:translateY(-3px); box-shadow:0 10px 26px rgba(15,23,42,.1); }
+    .span-full { grid-column:1/-1; }
+
+    .section-head { display:flex; align-items:center; gap:11px; margin-bottom:15px; }
+    .section-icon {
+      width:42px; height:42px; border-radius:13px; flex:none;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.15rem; color:#fff; box-shadow:0 4px 10px rgba(0,0,0,.15);
+    }
+    .section-head h2 { margin:0; font-size:1.08rem; color:#0f172a; letter-spacing:.2px; }
+    .ic-green  { background:linear-gradient(135deg,#16a34a,#15803d); }
+    .ic-blue   { background:linear-gradient(135deg,#3b82f6,#1d4ed8); }
+    .ic-purple { background:linear-gradient(135deg,#8b5cf6,#6d28d9); }
+    .ic-orange { background:linear-gradient(135deg,#f59e0b,#ea580c); }
+    .ic-teal   { background:linear-gradient(135deg,#14b8a6,#0f766e); }
+    .ic-gold   { background:linear-gradient(135deg,#eab308,#ca8a04); }
+    .ic-red    { background:linear-gradient(135deg,#ef4444,#b91c1c); }
+
+    /* Lists inside sections */
+    .list { list-style:none; padding:0; margin:0; }
+    .list li {
+      padding:10px 13px; margin-bottom:7px;
+      background:#f8fafc; border:1px solid #eef2f7; border-radius:10px;
+      font-size:.93rem; line-height:1.45;
+    }
+    .section p { font-size:.95rem; margin:6px 0; color:#334155; }
+
+    /* KPI cards (filled by dashboard.js) */
+    .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; }
+    .kpi {
+      background:linear-gradient(160deg,#f0fdf4,#ecfdf5);
+      border:1px solid #bbf7d0; border-radius:14px;
+      padding:15px 14px; text-align:center;
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .kpi-label { font-size:.78rem; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:#15803d; }
+    .kpi-value { font-size:1.5rem; font-weight:800; color:#14532d; }
+    .kpi-sub { font-size:.78rem; color:#64748b; }
+
+    .dash-note {
+      margin-top:14px; background:#f8fafc; border:1px dashed #cbd5e1;
+      border-radius:12px; padding:12px 15px; font-size:.92rem;
+    }
+
+    .profit-banner {
+      margin-top:14px; padding:15px 18px; border-radius:14px;
+      display:flex; align-items:center; justify-content:space-between;
+      font-weight:700; color:#fff; box-shadow:0 6px 18px rgba(0,0,0,.18);
+    }
+    .profit-banner.pos { background:linear-gradient(135deg,#16a34a,#15803d); }
+    .profit-banner.neg { background:linear-gradient(135deg,#ef4444,#b91c1c); }
+    .profit-banner strong { font-size:1.45rem; }
+
+    /* Chart card */
+    .chart-box { background:#fbfdff; border:1px solid #e8eef5; border-radius:14px; padding:16px; margin-top:14px; }
+    #salesChart { height:300px !important; width:100% !important; }
+
+    /* ---------- Dark mode ---------- */
+    body.dark .dash-hero { background:linear-gradient(135deg,#052e16,#166534); }
+    body.dark .section { background:#111827; border-color:#374151; }
+    body.dark .section:hover { box-shadow:0 10px 26px rgba(0,0,0,.55); }
+    body.dark .section-head h2 { color:#f1f5f9; }
+    body.dark .section p { color:#cbd5e1; }
+    body.dark .list li { background:#1f2937; border-color:#374151; color:#e2e8f0; }
+    body.dark .kpi { background:#052e16; border-color:#14532d; }
+    body.dark .kpi-value { color:#bbf7d0; }
+    body.dark .kpi-sub { color:#94a3b8; }
+    body.dark .dash-note { background:#111827; border-color:#374151; color:#cbd5e1; }
+    body.dark .chart-box { background:#0b1120; border-color:#1f2937; }
+
+    @media(max-width:600px){
+      .dash-hero { padding:20px; }
+      .dash-hero h1 { font-size:1.35rem; }
+      .section-grid { grid-template-columns:1fr; }
+    }
+  </style>
+  <!-- Loader Styles -->
+<style>
+  #bharatLoader {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: #fff3e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 9999;
+    transition: opacity 1.2s ease-out;
+    opacity: 1;
+    color: white;
+    font-family: system-ui, sans-serif;
+  }
+
+  #bharatLoader .logo-container {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin-bottom: 35px;
+  }
+
+  #bharatLoader img.logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+    box-shadow: 0 8px 35px rgba(0,0,0,0.4);
+    animation: pulse 2.8s infinite ease-in-out;
+  }
+
+  #bharatLoader h1 {
+    font-size: 50px;
+    margin: 0 0 12px 0;
+    color: #1e6b2d;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+  }
+
+  #bharatLoader p {
+    font-size: 24px;
+    margin: 8px 0 0 0;
+    opacity: 0.95;
+    font-weight: 500;
+    color: #d84315;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.12); opacity: 0.92; }
+  }
+</style>
+</head>
+<body>
+  <script>
+    if (!localStorage.getItem('bharat_logged_in')) { location.href = 'login.html'; }
+  </script>
+  <div id="bharatLoader">
+  <div class="logo-container">
+    <img src="favicon.jpeg" alt="Blink Bill Logo" class="logo">
+  </div>
+
+  <h1>Blink Bill</h1>
+  <p>Loading, please wait... 🚀</p>
+</div>
+
+  <div class="dash-wrap">
+
+    <!-- HERO HEADER -->
+    <div class="dash-hero">
+      <div>
+        <h1>📈 Business Dashboard</h1>
+        <div class="sub">Welcome back, <b id="dashOwner">Owner</b> — here's your shop at a glance</div>
+      </div>
+      <div class="hero-actions">
+        <button onclick="location.href='index.html'" class="btn-blue">🧾 Billing</button>
+        <button onclick="toggleMode()" class="btn-hero-light" id="modeBtn">🌙 Dark Mode</button>
+        <button onclick="logout()" class="logout-btn" style="position:static;">🚪 Logout</button>
+      </div>
+    </div>
+
+    <!-- SECTION GRID -->
+    <div class="section-grid">
+
+      <!-- TODAY PERFORMANCE -->
+      <div class="section span-full">
+        <div class="section-head">
+          <div class="section-icon ic-blue">📊</div>
+          <h2>Today's Performance</h2>
+        </div>
+        <div id="todayStats"></div>
+      </div>
+
+      <!-- STOCK -->
+      <div class="section span-full">
+        <div class="section-head">
+          <div class="section-icon ic-green">📦</div>
+          <h2>Stock Status</h2>
+        </div>
+        <div id="lowStockList"></div>
+        <div id="midStockList"></div>
+      </div>
+
+      <!-- WEEKLY + CHART -->
+      <div class="section span-full">
+        <div class="section-head">
+          <div class="section-icon ic-purple">💡</div>
+          <h2>Weekly Stats & Suggestions</h2>
+        </div>
+        <div id="weeklyStats"></div>
+        <div class="chart-box">
+          <canvas id="salesChart"></canvas>
+        </div>
+      </div>
+
+      <!-- PREDICTION -->
+      <div class="section">
+        <div class="section-head">
+          <div class="section-icon ic-orange">🔮</div>
+          <h2>Inventory Prediction (Next 7 Days)</h2>
+        </div>
+        <div id="inventoryPrediction"></div>
+      </div>
+
+      <!-- CUSTOMERS -->
+      <div class="section">
+        <div class="section-head">
+          <div class="section-icon ic-teal">👥</div>
+          <h2>Customer Insights</h2>
+        </div>
+        <div id="customerInsights"></div>
+      </div>
+
+      <!-- PRICE -->
+      <div class="section">
+        <div class="section-head">
+          <div class="section-icon ic-gold">💰</div>
+          <h2>Price Suggestions</h2>
+        </div>
+        <div id="priceSuggestions"></div>
+      </div>
+
+      <!-- SECURITY -->
+      <div class="section">
+        <div class="section-head">
+          <div class="section-icon ic-red">⚠️</div>
+          <h2>Security Alerts</h2>
+        </div>
+        <div id="securityAlerts"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="load-manager.js"></script> <!-- Lazy loader for heavy libs (Chart.js etc.) -->
+  <script src="dashboard.js"></script> <!-- New JS file -->
+  <script src="analytics.js"></script> <!-- AI heuristics module -->
+  <!-- Small quick access: AI analyze button already created by analytics.js but ensure area exists -->
+  <div id="aiControlsPlaceholder" style="position:fixed;right:12px;bottom:70px;z-index:99997;"></div>
+  <!-- LOADER JS -->
+<script>
+  window.addEventListener("load", () => {
+    const loader = document.getElementById("bharatLoader");
+    if (!loader) return;
+    setTimeout(() => {
+      loader.style.opacity = "0";
+      setTimeout(() => {
+        if (loader && loader.parentNode) {
+          loader.parentNode.removeChild(loader);
+        }
+      }, 1300);
+    }, 1800);
+  });
+
+  setTimeout(() => {
+    const loader = document.getElementById("bharatLoader");
+    if (loader && loader.parentNode) {
+      loader.style.opacity = "0";
+      setTimeout(() => {
+        if (loader.parentNode) loader.parentNode.removeChild(loader);
+      }, 1000);
+    }
+  }, 6000);
+</script>
+
+<!-- Push notification setup -->
+<script type="module">
+  import { setupPushNotifications } from "./notifications.js";
+  const ownerId = localStorage.getItem("bharat_logged_in") || localStorage.getItem("owner");
+  if (ownerId) {
+    // Ask once the dashboard has loaded, not immediately on page open
+    window.addEventListener("load", () => {
+      setTimeout(() => setupPushNotifications(ownerId), 2500);
+    });
+  }
+</script>
+
+</body>
+</html>
