@@ -2,8 +2,7 @@
       "relation": ["delegate_permission/common.handle_all_urls"],
       "target": {
         "namespace": "android_app",
-        "package_name": "app.vercel.blink_bill_six.twa",
-        "sha256_cert_fingerprints": ["1C:18:59:DE:F4:F9:5D:2E:1E:6E:BF:6E:B2:77:27:13:B0:83:32:7D:3A:0C:D1:92:FD:27:9C:90:57:8F:B1:D6"]
+        "package_name": "app.vercel.blink_bill_2_0.twa",
+        "sha256_cert_fingerprints": ["8A:88:51:1F:63:3B:53:24:93:5E:8A:57:DF:3F:26:BF:B9:E4:38:F5:A3:D6:16:53:82:0B:43:82:8F:0B:63:97"]
       }
     }]
-
