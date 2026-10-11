@@ -664,8 +664,8 @@ function toggleMode() {
 
   const loader = document.getElementById("bharatLoader");
   if (loader) {
-    loader.style.background = isDark ? "#1e1e1e" : "#fff3e0";
-    loader.style.color = isDark ? "#ffffff" : "#333333";
+    loader.style.background = isDark ? "#0b1120" : "#f5fbf4";
+    loader.style.color = isDark ? "#ffffff" : "#0f172a";
   }
 }
 

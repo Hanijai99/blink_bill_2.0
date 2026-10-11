@@ -1,21 +1,194 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Bills List - Blink Bill</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Saved Bills - Blink Bill</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="loader.css" />
+  <link rel="icon" href="favicon.jpeg" type="image/png" />
+  <script src="utils.js"></script>
+  <style>
+    .bills-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; }
+    .bills-head h1 { text-align:left; font-size:1.5rem; margin:0; }
+    .bills-summary {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0 18px;
+    }
+    .bill-stat {
+      background:linear-gradient(160deg,#f0fdf4,#ecfdf5);
+      border:1px solid #bbf7d0; border-radius:14px; padding:13px 10px; text-align:center;
+    }
+    .bill-stat .lbl { font-size:.72rem; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:#15803d; }
+    .bill-stat .val { font-size:1.25rem; font-weight:800; color:#14532d; margin-top:3px; }
+    .bill-card {
+      background:#fff; border:1px solid var(--border); border-radius:16px;
+      padding:16px; margin:12px 0; box-shadow:var(--shadow);
+    }
+    .bill-top { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+    .bill-cust { font-size:1.12rem; font-weight:800; color:#14532d; }
+    .bill-total { font-size:1.25rem; font-weight:900; color:#15803d; }
+    .bill-meta { color:#64748b; font-size:.86rem; margin-top:5px; }
+    .pay-badge {
+      display:inline-block; padding:3px 10px; border-radius:999px;
+      font-size:.74rem; font-weight:700; letter-spacing:.4px;
+    }
+    .pay-cash { background:#fef3c7; color:#92400e; }
+    .pay-online { background:#dbeafe; color:#1e40af; }
+    .bill-items {
+      display:none; margin-top:12px; border-top:1px dashed #dce8dc; padding-top:10px;
+      font-size:.9rem; color:#334155;
+    }
+    .bill-items.open { display:block; }
+    .bill-items .it { display:flex; justify-content:space-between; padding:4px 2px; }
+    .bill-items .it + .it { border-top:1px solid #f1f5f9; }
+    .btn-toggle {
+      margin-top:10px; padding:7px 14px; font-size:.82rem;
+      background:linear-gradient(135deg,var(--slate),var(--slate-dark));
+    }
+    .empty {
+      text-align:center; color:#64748b; padding:50px 10px;
+      background:#fff; border:1px dashed var(--border); border-radius:16px;
+    }
+    @media(max-width:480px){ .bills-summary { grid-template-columns:1fr 1fr; } }
+  </style>
 </head>
 <body>
   <script>
     if (!localStorage.getItem('bharat_logged_in')) { location.href = 'login.html'; }
   </script>
-  <div class="container">
-    <h1 style="text-align:center;color:#006400;">Saved Bills</h1>
-    <p style="text-align:center;color:#666;">This page will list saved bills. Feature coming soon.</p>
-    <div style="margin-top:20px;text-align:center;">
-      <button onclick="location.href='index.html'" class="btn-stock">Back to Billing</button>
+
+  <div id="bharatLoader">
+    <div class="logo-container">
+      <div class="ring"></div>
+      <img src="favicon.jpeg" alt="Blink Bill Logo" class="logo">
     </div>
+    <h1>Blink Bill</h1>
+    <p>Loading your bills... 🧾</p>
   </div>
+
+  <div class="container">
+    <div class="bills-head">
+      <h1>🧾 Saved Bills</h1>
+      <button onclick="location.href='index.html'" class="btn-stock" style="padding:9px 14px; font-size:.85rem;">← Billing</button>
+    </div>
+
+    <input type="text" id="search" placeholder="Search by customer, phone or bill #..." class="input" oninput="filter()" autofocus/>
+
+    <div class="bills-summary">
+      <div class="bill-stat"><div class="lbl">Total Bills</div><div class="val" id="statCount">0</div></div>
+      <div class="bill-stat"><div class="lbl">Today</div><div class="val" id="statToday">₹0</div></div>
+      <div class="bill-stat"><div class="lbl">All-time</div><div class="val" id="statTotal">₹0</div></div>
+    </div>
+
+    <div id="billsList"></div>
+  </div>
+
+  <script>
+    let allBills = [];
+
+    function loadBills() {
+      try { allBills = JSON.parse(localStorage.getItem("bharat_bills") || "[]"); } catch (e) { allBills = []; }
+      // Merge archived bills (stored in IndexedDB by the archiver)
+      if (window.ArchiveDB) {
+        ArchiveDB.getAll().then(arc => {
+          if (arc && arc.length) {
+            allBills = [...allBills, ...arc];
+            render();
+          }
+        }).catch(() => {});
+      }
+      render();
+    }
+
+    function money(n) { return "₹" + Number(n || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+    function fmtDate(iso) {
+      if (!iso) return "—";
+      try {
+        const d = new Date(iso);
+        return d.toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+      } catch (e) { return iso; }
+    }
+
+    function render() {
+      const listEl = document.getElementById("billsList");
+      const q = (document.getElementById("search").value || "").toLowerCase().trim();
+
+      let filtered = allBills;
+      if (q) {
+        filtered = allBills.filter(b =>
+          (b.name || "").toLowerCase().includes(q) ||
+          (b.phone || "").includes(q) ||
+          (b.id || "").toLowerCase().includes(q)
+        );
+      }
+
+      // Summary (always over the full dataset)
+      const today = new Date().toDateString();
+      let todaySum = 0, totalSum = 0;
+      allBills.forEach(b => {
+        totalSum += Number(b.total || 0);
+        if (b.date && new Date(b.date).toDateString() === today) todaySum += Number(b.total || 0);
+      });
+      document.getElementById("statCount").textContent = allBills.length;
+      document.getElementById("statToday").textContent = money(todaySum);
+      document.getElementById("statTotal").textContent = money(totalSum);
+
+      if (!filtered.length) {
+        listEl.innerHTML = '<div class="empty">' + (q ? "No matching bills found." : "No bills saved yet. Create one from the Billing screen!") + "</div>";
+        return;
+      }
+
+      const cards = [...filtered].reverse().map(b => {
+        const payClass = b.paymentMode === "online" ? "pay-online" : "pay-cash";
+        const payLabel = b.paymentMode === "online" ? "ONLINE/UPI" : "CASH";
+        const itemsHtml = (b.items && b.items.length)
+          ? b.items.map(it => `<div class="it"><span>${esc(it.name)} × ${it.qty}</span><span>${money(it.qty * it.price)}</span></div>`).join("")
+          : `<div class="it"><span>${esc(b.itemsList || "No item detail")}</span></div>`;
+        const details =
+          `<div class="bill-meta">Subtotal ${money(b.subtotal)} • Discount ${money(b.discount)} • GST ${money(b.gst)}</div>` +
+          (b.discount > 0 ? "" : ""); // keep simple
+        return `
+          <div class="bill-card" data-id="${esc(b.id || "")}">
+            <div class="bill-top">
+              <div class="bill-cust">${esc(b.name || "Walk-in Customer")} ${b.phone ? `<small style="color:#64748b;font-weight:600;">• ${esc(b.phone)}</small>` : ""}</div>
+              <div class="bill-total">${money(b.total)}</div>
+            </div>
+            <div class="bill-meta">
+              <span class="pay-badge ${payClass}">${payLabel}</span>
+              &nbsp;${fmtDate(b.date)} &nbsp;•&nbsp; ${b.itemsCount || 0} items &nbsp;•&nbsp; <span style="color:#006400;">#${esc(b.id || "")}</span>
+            </div>
+            <button class="btn-toggle" onclick="toggleItems(this)">▼ Show Items</button>
+            <div class="bill-items">${itemsHtml}${details}</div>
+          </div>`;
+      }).join("");
+
+      listEl.innerHTML = cards;
+    }
+
+    function toggleItems(btn) {
+      const box = btn.nextElementSibling;
+      if (box) {
+        box.classList.toggle("open");
+        btn.textContent = box.classList.contains("open") ? "▲ Hide Items" : "▼ Show Items";
+      }
+    }
+
+    function filter() { render(); }
+
+    // Loader dismiss (consistent with other pages)
+    (function dismiss(){
+      const hide = () => {
+        const loader = document.getElementById("bharatLoader");
+        if (!loader || !loader.parentNode) return;
+        loader.style.opacity = "0";
+        setTimeout(() => { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 1000);
+      };
+      window.addEventListener("load", () => setTimeout(hide, 1300));
+      setTimeout(hide, 4000); // safety net
+    })();
+
+    loadBills();
+  </script>
 </body>
 </html>

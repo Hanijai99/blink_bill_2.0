@@ -1,5 +1,5 @@
 // Blink Bill Service Worker — real offline support
-const CACHE_NAME = "blinkbill-cache-v18";
+const CACHE_NAME = "blinkbill-cache-v19";
 
 // Core app shell — everything needed for the app to open and work offline
 const APP_SHELL = [
@@ -18,6 +18,7 @@ const APP_SHELL = [
   "/offline.html",
   "/privacy-policy.html",
   "/style.css",
+  "/loader.css",
   "/script.js",
   "/load-manager.js",
   "/utils.js",
