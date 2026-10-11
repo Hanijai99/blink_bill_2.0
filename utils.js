@@ -31,6 +31,35 @@ function showToast(message, isError = false, duration = 2600) {
   }, duration);
 }
 
+// ---------- Premium theme (light / dark) ----------
+// Every page that loads utils.js gets theme support automatically.
+function syncModeBtn(isDark) {
+  const btn = document.getElementById("modeBtn");
+  if (btn) btn.innerHTML = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+}
+
+function applyTheme() {
+  const saved = localStorage.getItem("dark");
+  const isDark = saved === null
+    ? (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)
+    : saved === "true";
+  document.body.classList.toggle("dark", isDark);
+  syncModeBtn(isDark);
+}
+
+function toggleTheme() {
+  const isDark = !document.body.classList.contains("dark");
+  document.body.classList.toggle("dark", isDark);
+  localStorage.setItem("dark", isDark);
+  syncModeBtn(isDark);
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", applyTheme);
+} else {
+  applyTheme();
+}
+
 // Scan success feedback: short beep generated on-device.
 // Mobile browsers create AudioContext in a "suspended" state unless unlocked
 // by a user gesture, so we share ONE context, resume it on every use, and

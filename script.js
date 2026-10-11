@@ -659,17 +659,14 @@ function logout() {
 }
 
 function toggleMode() {
-  const isDark = document.body.classList.toggle("dark");
-  localStorage.setItem("dark", isDark);
+  toggleTheme(); // shared theme engine (utils.js)
 
   const loader = document.getElementById("bharatLoader");
   if (loader) {
-    loader.style.background = isDark ? "#0b1120" : "#f5fbf4";
-    loader.style.color = isDark ? "#ffffff" : "#0f172a";
+    loader.style.background = document.body.classList.contains("dark") ? "#0b1120" : "#f5fbf4";
+    loader.style.color = document.body.classList.contains("dark") ? "#ffffff" : "#0f172a";
   }
 }
-
-if(localStorage.getItem("dark")==="true") document.body.classList.add("dark");
 
 async function exportData() {
   // Load Excel library only when backup is requested (Load Manager)

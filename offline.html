@@ -17,11 +17,13 @@
     .offline-card {
       max-width: 420px;
       width: 100%;
-      background: white;
+      background: var(--card);
+      border: 1px solid var(--border);
       border-radius: 28px;
       padding: 40px 30px;
       text-align: center;
-      box-shadow: 0 20px 60px rgba(0,100,0,0.3);
+      box-shadow: var(--shadow-lg);
+      transition: background-color .35s, border-color .35s;
     }
     .offline-icon {
       width: 80px;
@@ -36,11 +38,11 @@
     }
     .offline-card h1 {
       font-size: 1.6rem;
-      color: #006400;
+      color: var(--green-deep);
       margin-bottom: 10px;
     }
     .offline-card p {
-      color: #555;
+      color: var(--muted);
       font-size: 1rem;
       line-height: 1.5;
       margin-bottom: 24px;
@@ -59,11 +61,12 @@
     .offline-note {
       margin-top: 18px;
       font-size: 0.85rem;
-      color: #888;
+      color: var(--muted);
     }
   </style>
 </head>
 <body>
+  <script>if (localStorage.getItem('dark') === 'true') document.body.classList.add('dark');</script>
   <div class="offline-wrap">
     <div class="offline-card">
       <div class="offline-icon">📶</div>

@@ -278,10 +278,6 @@ if (window.ArchiveDB) {
   });
 }
 
-// Dark mode from index
-function toggleMode() { 
-  document.body.classList.toggle("dark"); 
-  localStorage.setItem("dark", document.body.classList.contains("dark"));
-}
-if(localStorage.getItem("dark")==="true") document.body.classList.add("dark");
+// Dark mode (shared theme engine in utils.js)
+function toggleMode() { toggleTheme(); }
 function logout() { if(confirm("Logout?")) location.href="login.html"; }

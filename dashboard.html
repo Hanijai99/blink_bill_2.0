@@ -28,9 +28,9 @@
     /* Section cards grid */
     .section-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
     .section {
-      background:#fff; border:1px solid #e2e8f0; border-radius:18px;
-      padding:20px; box-shadow:0 2px 12px rgba(15,23,42,.06);
-      transition:transform .2s, box-shadow .2s;
+      background:var(--card); border:1px solid var(--border); border-radius:18px;
+      padding:20px; box-shadow:var(--shadow);
+      transition:transform .2s, box-shadow .2s, background-color .3s;
     }
     .section:hover { transform:translateY(-3px); box-shadow:0 10px 26px rgba(15,23,42,.1); }
     .span-full { grid-column:1/-1; }
@@ -41,7 +41,7 @@
       display:flex; align-items:center; justify-content:center;
       font-size:1.15rem; color:#fff; box-shadow:0 4px 10px rgba(0,0,0,.15);
     }
-    .section-head h2 { margin:0; font-size:1.08rem; color:#0f172a; letter-spacing:.2px; }
+    .section-head h2 { margin:0; font-size:1.08rem; color:var(--text); letter-spacing:.2px; }
     .ic-green  { background:linear-gradient(135deg,#16a34a,#15803d); }
     .ic-blue   { background:linear-gradient(135deg,#3b82f6,#1d4ed8); }
     .ic-purple { background:linear-gradient(135deg,#8b5cf6,#6d28d9); }
@@ -54,26 +54,28 @@
     .list { list-style:none; padding:0; margin:0; }
     .list li {
       padding:10px 13px; margin-bottom:7px;
-      background:#f8fafc; border:1px solid #eef2f7; border-radius:10px;
-      font-size:.93rem; line-height:1.45;
+      background:var(--surface); border:1px solid var(--border); border-radius:10px;
+      font-size:.93rem; line-height:1.45; color:var(--text);
+      transition:background-color .3s;
     }
-    .section p { font-size:.95rem; margin:6px 0; color:#334155; }
+    .section p { font-size:.95rem; margin:6px 0; color:var(--muted); }
 
     /* KPI cards (filled by dashboard.js) */
     .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; }
     .kpi {
-      background:linear-gradient(160deg,#f0fdf4,#ecfdf5);
-      border:1px solid #bbf7d0; border-radius:14px;
+      background:linear-gradient(160deg,var(--surface),var(--surface-2));
+      border:1px solid var(--border); border-radius:14px;
       padding:15px 14px; text-align:center;
       display:flex; flex-direction:column; gap:4px;
+      transition:background-color .3s, border-color .3s;
     }
-    .kpi-label { font-size:.78rem; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:#15803d; }
-    .kpi-value { font-size:1.5rem; font-weight:800; color:#14532d; }
-    .kpi-sub { font-size:.78rem; color:#64748b; }
+    .kpi-label { font-size:.78rem; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--green-dark); }
+    .kpi-value { font-size:1.5rem; font-weight:800; color:var(--green-deep); }
+    .kpi-sub { font-size:.78rem; color:var(--muted); }
 
     .dash-note {
-      margin-top:14px; background:#f8fafc; border:1px dashed #cbd5e1;
-      border-radius:12px; padding:12px 15px; font-size:.92rem;
+      margin-top:14px; background:var(--surface); border:1px dashed var(--border-strong);
+      border-radius:12px; padding:12px 15px; font-size:.92rem; color:var(--text);
     }
 
     .profit-banner {
@@ -86,7 +88,7 @@
     .profit-banner strong { font-size:1.45rem; }
 
     /* Chart card */
-    .chart-box { background:#fbfdff; border:1px solid #e8eef5; border-radius:14px; padding:16px; margin-top:14px; }
+    .chart-box { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px; margin-top:14px; }
     #salesChart { height:300px !important; width:100% !important; }
 
     /* ---------- Dark mode ---------- */
@@ -97,6 +99,7 @@
     body.dark .section p { color:#cbd5e1; }
     body.dark .list li { background:#1f2937; border-color:#374151; color:#e2e8f0; }
     body.dark .kpi { background:#052e16; border-color:#14532d; }
+    body.dark .kpi-label { color:#4ade80; }
     body.dark .kpi-value { color:#bbf7d0; }
     body.dark .kpi-sub { color:#94a3b8; }
     body.dark .dash-note { background:#111827; border-color:#374151; color:#cbd5e1; }

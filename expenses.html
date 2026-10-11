@@ -35,7 +35,7 @@
 
       <div id="expList" style="margin-top:30px;"></div>
 
-      <div style="margin-top:30px; padding:20px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:15px; text-align:center;">
+      <div class="stat-panel" style="margin-top:30px; text-align:center;">
         <p><strong>Today Total Expense:</strong> ₹<span id="todayTotal">0.00</span></p>
       </div>
     </div>
@@ -68,7 +68,7 @@
       todayExp.forEach((e, i) => {
         html += `<li style="padding:10px; border-bottom:1px solid #ddd;">
           ${esc(e.desc)} - ₹${e.amt.toFixed(2)}
-          <button onclick="deleteExpense(${i})" style="float:right; background:#ef4444; color:white; border:none; padding:5px 10px; border-radius:8px;">🗑️ Delete</button>
+          <button onclick="deleteExpense(${i})" style="float:right; background:var(--red); color:white; border:none; padding:5px 10px; border-radius:8px;">🗑️ Delete</button>
         </li>`;
       });
       html += "</ul>";

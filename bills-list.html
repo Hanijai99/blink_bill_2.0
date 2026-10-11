@@ -15,19 +15,22 @@
       display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0 18px;
     }
     .bill-stat {
-      background:linear-gradient(160deg,#f0fdf4,#ecfdf5);
-      border:1px solid #bbf7d0; border-radius:14px; padding:13px 10px; text-align:center;
+      background:linear-gradient(160deg,var(--surface),var(--surface-2));
+      border:1px solid var(--border); border-radius:14px; padding:13px 10px; text-align:center;
+      transition:background-color .3s;
     }
-    .bill-stat .lbl { font-size:.72rem; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:#15803d; }
-    .bill-stat .val { font-size:1.25rem; font-weight:800; color:#14532d; margin-top:3px; }
+    .bill-stat .lbl { font-size:.72rem; font-weight:700; letter-spacing:.6px; text-transform:uppercase; color:var(--green-dark); }
+    .bill-stat .val { font-size:1.25rem; font-weight:800; color:var(--green-deep); margin-top:3px; }
     .bill-card {
-      background:#fff; border:1px solid var(--border); border-radius:16px;
+      background:var(--card); border:1px solid var(--border); border-radius:16px;
       padding:16px; margin:12px 0; box-shadow:var(--shadow);
+      transition:background-color .3s, border-color .3s, box-shadow .3s;
     }
+    .bill-card:hover { box-shadow:var(--shadow-lg); }
     .bill-top { display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
-    .bill-cust { font-size:1.12rem; font-weight:800; color:#14532d; }
-    .bill-total { font-size:1.25rem; font-weight:900; color:#15803d; }
-    .bill-meta { color:#64748b; font-size:.86rem; margin-top:5px; }
+    .bill-cust { font-size:1.12rem; font-weight:800; color:var(--green-deep); }
+    .bill-total { font-size:1.25rem; font-weight:900; color:var(--green-dark); }
+    .bill-meta { color:var(--muted); font-size:.86rem; margin-top:5px; }
     .pay-badge {
       display:inline-block; padding:3px 10px; border-radius:999px;
       font-size:.74rem; font-weight:700; letter-spacing:.4px;
@@ -35,19 +38,19 @@
     .pay-cash { background:#fef3c7; color:#92400e; }
     .pay-online { background:#dbeafe; color:#1e40af; }
     .bill-items {
-      display:none; margin-top:12px; border-top:1px dashed #dce8dc; padding-top:10px;
-      font-size:.9rem; color:#334155;
+      display:none; margin-top:12px; border-top:1px dashed var(--border); padding-top:10px;
+      font-size:.9rem; color:var(--text);
     }
     .bill-items.open { display:block; }
     .bill-items .it { display:flex; justify-content:space-between; padding:4px 2px; }
-    .bill-items .it + .it { border-top:1px solid #f1f5f9; }
+    .bill-items .it + .it { border-top:1px solid var(--border); }
     .btn-toggle {
       margin-top:10px; padding:7px 14px; font-size:.82rem;
       background:linear-gradient(135deg,var(--slate),var(--slate-dark));
     }
     .empty {
-      text-align:center; color:#64748b; padding:50px 10px;
-      background:#fff; border:1px dashed var(--border); border-radius:16px;
+      text-align:center; color:var(--muted); padding:50px 10px;
+      background:var(--card); border:1px dashed var(--border); border-radius:16px;
     }
     @media(max-width:480px){ .bills-summary { grid-template-columns:1fr 1fr; } }
   </style>
@@ -156,7 +159,7 @@
             </div>
             <div class="bill-meta">
               <span class="pay-badge ${payClass}">${payLabel}</span>
-              &nbsp;${fmtDate(b.date)} &nbsp;•&nbsp; ${b.itemsCount || 0} items &nbsp;•&nbsp; <span style="color:#006400;">#${esc(b.id || "")}</span>
+              &nbsp;${fmtDate(b.date)} &nbsp;•&nbsp; ${b.itemsCount || 0} items &nbsp;•&nbsp; <span class="t-green">#${esc(b.id || "")}</span>
             </div>
             <button class="btn-toggle" onclick="toggleItems(this)">▼ Show Items</button>
             <div class="bill-items">${itemsHtml}${details}</div>

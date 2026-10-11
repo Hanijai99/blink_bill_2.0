@@ -2,19 +2,18 @@
 <html lang="en">
 <head>
   <link rel="stylesheet" href="loader.css" />
+  <link rel="stylesheet" href="style.css" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>UPI Payment - Blink Bill</title>
   <style>
-    body { font-family: system-ui, sans-serif; text-align:center; background:#f8f9fa; padding:20px; }
-    h1 { color:#28a745; }
-    #qr-code-container { margin:30px auto; width:280px; height:280px; border:2px solid #28a745; border-radius:12px; overflow:hidden; }
-    .info { margin:20px; font-size:1.1rem; color:#333; }
-    .upi-box { background:#fff; padding:15px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); max-width:400px; margin:20px auto; }
+    body { font-family:'Segoe UI',system-ui,sans-serif; text-align:center; padding:20px; min-height:100vh; }
+    #qr-code-container { margin:30px auto; width:280px; height:280px; border:2px solid var(--green); border-radius:16px; overflow:hidden; box-shadow:var(--shadow); background:#fff; }
+    .upi-box { background:var(--card); border:1px solid var(--border); padding:15px; border-radius:20px; box-shadow:var(--shadow); max-width:400px; margin:20px auto; transition:background-color .3s; }
     .pay-btn {
       margin-top:20px; background:linear-gradient(135deg,#16a34a,#15803d); color:#fff;
       border:none; padding:17px 38px; border-radius:50px; font-size:1.12rem;
-      font-weight:bold; cursor:pointer; box-shadow:0 8px 20px rgba(22,163,74,.4);
+      font-weight:bold; cursor:pointer; box-shadow:0 8px 20px rgba(22,163,74,.4), inset 0 1px 0 rgba(255,255,255,.2);
       letter-spacing:.5px; transition:transform .15s, filter .2s;
     }
     .pay-btn:hover { transform:translateY(-2px); filter:brightness(1.06); }
@@ -23,6 +22,7 @@
   <script src="load-manager.js"></script>
 </head>
 <body>
+  <script>if (localStorage.getItem('dark') === 'true') document.body.classList.add('dark');</script>
 
   <h1>Scan & Pay</h1>
 
@@ -38,7 +38,7 @@
   </div>
 
   <p id="switchLink" style="margin-top:10px;">
-    <a href="upi_manage.html" style="color:#28a745; font-weight:bold;">Change payment account</a>
+    <a href="upi_manage.html" class="t-green" style="font-weight:bold;">Change payment account</a>
   </p>
 
   <!-- Owner taps this after confirming money arrived → bill auto-prints in the app -->

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="loader.css" />
+  <link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="loader.css" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Privacy Policy - Blink Bill</title>
@@ -12,21 +13,23 @@
     margin: 0 auto;
     padding: 40px 20px;
     line-height: 1.7;
-    color: #1a1a1a;
-    background: #ffffff;
+    color: var(--text);
+    background: linear-gradient(180deg,var(--bg-a),var(--bg-b));
+    min-height: 100vh;
   }
   h1 {
-    color: #000;
+    color: var(--green-deep);
     border-bottom: 3px solid #d4af37;
     padding-bottom: 12px;
   }
+  body.dark h1 { color: #4ade80; }
   h2 {
-    color: #1a1a1a;
+    color: var(--text);
     margin-top: 32px;
     font-size: 20px;
   }
   .updated {
-    color: #666;
+    color: var(--muted);
     font-size: 14px;
     margin-bottom: 24px;
   }
@@ -37,25 +40,25 @@
     margin-bottom: 8px;
   }
   .contact-box {
-    background: #f8f8f8;
+    background: var(--surface);
     border-left: 4px solid #d4af37;
     padding: 16px 20px;
     margin-top: 16px;
-    border-radius: 4px;
+    border-radius: 12px;
   }
   footer {
     margin-top: 48px;
     padding-top: 16px;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--border);
     font-size: 13px;
-    color: #888;
+    color: var(--muted);
   }
   .back-btn {
     position: fixed;
     top: 16px;
     left: 16px;
     z-index: 999;
-    background: #006400;
+    background: linear-gradient(135deg,#16a34a,#15803d);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -63,12 +66,13 @@
     font-weight: bold;
     font-size: 14px;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    box-shadow: 0 4px 12px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.2);
   }
-  .back-btn:hover { background: #009900; }
+  .back-btn:hover { filter: brightness(1.1); }
 </style>
 </head>
 <body>
+<script>if (localStorage.getItem('dark') === 'true') document.body.classList.add('dark');</script>
 
 <button class="back-btn" onclick="location.href='index.html'">← Back to App</button>
 

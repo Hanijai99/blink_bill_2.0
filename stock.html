@@ -22,16 +22,16 @@
   <p>Loading, please wait... 🚀</p>
 </div>
   <div class="container">
-    <h1 style="color:#006400; text-align:center;">Manage Stock</h1>
+    <h1>Manage Stock</h1>
 
-    <div class="dashboard" style="display:flex; justify-content:space-around; margin:20px 0; padding:15px; background:#e8f5e8; border-radius:15px;">
-      <div class="dash-item">
-        <strong>Total Products</strong><br>
-        <span id="totalPro" style="font-size:1.5rem; color:#006400;">0</span>
+    <div class="stock-stats">
+      <div class="stat-chip">
+        <div class="lbl">Total Products</div>
+        <div class="num" id="totalPro">0</div>
       </div>
-      <div class="dash-item">
-        <strong>Total Stock Value</strong><br>
-        <span id="totalVal" style="font-size:1.5rem; color:#006400;">₹0.00</span>
+      <div class="stat-chip">
+        <div class="lbl">Total Stock Value</div>
+        <div class="num" id="totalVal">₹0.00</div>
       </div>
     </div>
 
@@ -43,7 +43,7 @@
       </button>
     </div>
 
-    <div class="add-form" style="background:#f8fff8; padding:20px; border-radius:20px; margin:20px 0; border:2px solid #4caf50;">
+    <div class="add-form">
       <input type="text" id="pname" placeholder="Product Name" class="input" required/>
       <input type="number" id="pstock" placeholder="Stock Quantity" class="input" min="0"/>
       <input type="number" id="pprice" placeholder="Price ₹" step="0.01" class="input" min="0"/>
@@ -123,12 +123,12 @@
       const q = document.getElementById('search').value.toLowerCase();
       const f = items.filter(p => p.name.toLowerCase().includes(q));
       document.getElementById('list').innerHTML = f.map(p => `
-        <div class="stock-item" style="margin:15px 0; padding:18px; background:#fff; border-radius:18px;">
+        <div class="stock-item" style="margin:15px 0; padding:18px;">
           <strong>${esc(p.name)}</strong><br>
           Stock: ${p.stock} | ₹${p.price} | GST ${p.gst}%
           ${p.barcode ? `<br>Barcode: ${esc(p.barcode)}` : ``}
         </div>
-      `).join("") || "<p style='text-align:center;color:#999;'>No products</p>";
+      `).join("") || "<p class='t-muted' style='text-align:center; padding:30px;'>No products</p>";
     }
 
     let stockQr = null;

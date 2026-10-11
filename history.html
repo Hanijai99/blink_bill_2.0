@@ -23,7 +23,7 @@
   <p>Loading, please wait... 🚀</p>
 </div>
   <div class="container">
-    <h1 style="color:#006400; text-align:center;">Customer History</h1>
+    <h1>Customer History</h1>
     <input type="text" id="search" placeholder="Search by name or phone..." class="input" oninput="filter()" autofocus/>
 
     <div id="historyList" style="margin-top:20px;"></div>
@@ -46,7 +46,7 @@
 
     function showHistory() {
       if (allBills.length === 0) {
-        document.getElementById("historyList").innerHTML = "<p style='text-align:center; color:#666; padding:40px;'>No bills saved yet.</p>";
+        document.getElementById("historyList").innerHTML = "<p class='t-muted' style='text-align:center; padding:40px;'>No bills saved yet.</p>";
         return;
       }
 
@@ -56,15 +56,15 @@
       let html = "";
       billsToShow.forEach(b => {
         html += `
-          <div class="stock-item" style="margin:12px 0; padding:18px; border-radius:18px; background:#f8fff8; border:2px solid #e0e0e0; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
-            <strong style="color:#006400; font-size:1.4rem;">${esc(b.name || "Walk-in Customer")}</strong>
-            ${b.phone ? `<span style="color:#006400; margin-left:8px;">(${esc(b.phone)})</span>` : ""}
+          <div class="stock-item" style="margin:12px 0; padding:18px; border-radius:18px;">
+            <strong class="t-green" style="font-size:1.4rem;">${esc(b.name || "Walk-in Customer")}</strong>
+            ${b.phone ? `<span class="t-green" style="margin-left:8px;">(${esc(b.phone)})</span>` : ""}
             <br><br>
-            <small style="color:#555;">
+            <small class="t-muted">
               ${b.date || "Date not saved"}<br>
-                          <strong style="color:#c62828; font-size:1.2rem;">₹${esc(b.total || "0.00")}</strong> • ${esc(b.itemsCount || "0")} items
+                          <strong class="t-red" style="font-size:1.2rem;">₹${esc(b.total || "0.00")}</strong> • ${esc(b.itemsCount || "0")} items
             </small>
-                        ${b.items ? `<br><small style="color:#006400;">${(b.items || []).map(it => `${esc(it.name)} (${it.qty}×₹${it.price})`).join(' | ')}</small>` : (b.itemsList ? `<br><small style="color:#006400;">${esc(b.itemsList)}</small>` : "")}
+                        ${b.items ? `<br><small class="t-green">${(b.items || []).map(it => `${esc(it.name)} (${it.qty}×₹${it.price})`).join(' | ')}</small>` : (b.itemsList ? `<br><small class="t-green">${esc(b.itemsList)}</small>` : "")}
           </div>
         `;
       });
@@ -80,12 +80,12 @@
       );
 
       document.getElementById("historyList").innerHTML = filtered.length ? filtered.map(b => `
-        <div class="stock-item" style="margin:12px 0; padding:18px; border-radius:18px; background:#f8fff8;">
-          <strong style="color:#006400;">${esc(b.name)}</strong> ${b.phone ? `(${esc(b.phone)})` : ""}
-          <br><small>${b.date} • ₹${esc(b.total)} • ${esc(b.itemsCount)} items</small>
-          ${b.itemsList ? `<br><small style="color:#006400;">${esc(b.itemsList)}</small>` : ""}
+        <div class="stock-item" style="margin:12px 0; padding:18px; border-radius:18px;">
+          <strong class="t-green">${esc(b.name)}</strong> ${b.phone ? `(${esc(b.phone)})` : ""}
+          <br><small class="t-muted">${b.date} • ₹${esc(b.total)} • ${esc(b.itemsCount)} items</small>
+          ${b.itemsList ? `<br><small class="t-green">${esc(b.itemsList)}</small>` : ""}
         </div>
-      `).join("") : "<p style='text-align:center; color:#999; padding:40px;'>No customer found.</p>";
+      `).join("") : "<p class='t-muted' style='text-align:center; padding:40px;'>No customer found.</p>";
     }
 
     showHistory();
