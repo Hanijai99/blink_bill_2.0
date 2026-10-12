@@ -19,6 +19,7 @@
   <!-- LOAD MANAGER: heavy libraries (scanner/chart/pdf) load on demand -->
   <script src="load-manager.js"></script>
   <script src="utils.js"></script>
+  <script src="store-scope.js"></script>
 
   
 </head>
@@ -45,8 +46,11 @@
     <div class="header">
       <h1>BLINK BILL</h1>
       <button id="modeBtn" onclick="toggleMode()" class="btn-main btn-purple"><i class="fa-solid fa-moon"></i><span>Dark Mode</span></button>
+      <button onclick="location.href='stores.html'" class="btn-main btn-teal" style="width:auto;" title="Switch store"><i class="fa-solid fa-store"></i><span id="storeBadge">Store</span></button>
       <button onclick="logout()" class="btn-main btn-red"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
     </div>
+
+    <script>try{var sb=document.getElementById('storeBadge');if(sb&&window.StoreScope)sb.textContent=StoreScope.activeStore().name;}catch(e){}</script>
 
     <div class="info">Logged in as: <strong id="owner">Owner</strong></div>
 
@@ -126,6 +130,7 @@
     <!-- OWNER BUTTONS -->
     <div class="buttons">
       <button onclick="location.href='ai-assistant.html'" class="btn-main btn-ai"><i class="fa-solid fa-robot"></i><span>AI ASSISTANT</span></button>
+      <button onclick="location.href='stores.html'" class="btn-main btn-pink"><i class="fa-solid fa-store"></i><span>MANAGE STORES</span></button>
       <button onclick="print()" class="btn-main btn-slate"><i class="fa-solid fa-print"></i><span>PRINT</span></button>
       <button onclick="upi()" class="btn-main btn-upi"><i class="fa-solid fa-credit-card"></i><span>UPI PAY</span></button>
       <button onclick="save()" class="btn-main btn-green"><i class="fa-solid fa-floppy-disk"></i><span>SAVE BILL</span></button>

@@ -150,6 +150,7 @@
 </div>
 
 <script src="utils.js"></script>
+  <script src="store-scope.js"></script>
 <script>
 // ===================== AI BUSINESS ASSISTANT =====================
 // Reads the shop's live data (bills, stock, expenses, shop details)
@@ -160,10 +161,10 @@ function toggleMode(){ toggleTheme(); }
 
 // ---------- Data loaders (live from localStorage) ----------
 const DB = {
-  bills:     (()=>{ try { return JSON.parse(localStorage.getItem('bharat_bills')||'[]'); } catch(e){ return []; } })(),
-  items:     (()=>{ try { return JSON.parse(localStorage.getItem('bharat_inventory')||'[]'); } catch(e){ return []; } })(),
-  expenses:  (()=>{ try { return JSON.parse(localStorage.getItem('bharat_expenses')||'[]'); } catch(e){ return []; } })(),
-  shop:      (()=>{ try { return JSON.parse(localStorage.getItem('bharat_shop_details')||'{}'); } catch(e){ return {}; } })(),
+  bills:     (()=>{ try { return JSON.parse(localStorage.getItem(StoreScope.key('bharat_bills'))||'[]'); } catch(e){ return []; } })(),
+  items:     (()=>{ try { return JSON.parse(localStorage.getItem(StoreScope.key('bharat_inventory'))||'[]'); } catch(e){ return []; } })(),
+  expenses:  (()=>{ try { return JSON.parse(localStorage.getItem(StoreScope.key('bharat_expenses'))||'[]'); } catch(e){ return []; } })(),
+  shop:      (()=>{ try { return JSON.parse(localStorage.getItem(StoreScope.key('bharat_shop_details'))||'{}'); } catch(e){ return {}; } })(),
   owner:     localStorage.getItem('owner') || 'Owner'
 };
 

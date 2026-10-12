@@ -20,6 +20,7 @@
   <script>
     if (!localStorage.getItem('bharat_logged_in')) { location.href = 'login.html'; }
   </script>
+  <script src="store-scope.js"></script>
 
   <!-- Loader ONLY HERE – head-la irundhadha full-a remove panniten -->
   <div id="bharatLoader">
@@ -59,7 +60,7 @@
   <script>
     // Your existing shop details script
     window.addEventListener("load", () => {
-      const details = JSON.parse(localStorage.getItem("bharat_shop_details") || "{}");
+      const details = JSON.parse(localStorage.getItem(StoreScope.key("bharat_shop_details")) || "{}");
       document.getElementById("shopName").value = details.shopName || "";
       document.getElementById("shopAddress").value = details.shopAddress || "";
       document.getElementById("shopGST").value = details.shopGST || "";
@@ -83,7 +84,7 @@
         return;
       }
 
-      localStorage.setItem("bharat_shop_details", JSON.stringify(details));
+      localStorage.setItem(StoreScope.key("bharat_shop_details"), JSON.stringify(details));
       document.getElementById("saveMsg").innerText = "Shop details saved successfully! 💚";
       setTimeout(() => document.getElementById("saveMsg").innerText = "", 3000);
     }

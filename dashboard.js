@@ -1,12 +1,12 @@
 // dashboard.js
 
-let items = JSON.parse(localStorage.getItem('bharat_inventory')) || [];
-let bills = JSON.parse(localStorage.getItem('bharat_bills')) || [];
+let items = JSON.parse(localStorage.getItem(StoreScope.key('bharat_inventory'))) || [];
+let bills = JSON.parse(localStorage.getItem(StoreScope.key('bharat_bills'))) || [];
 
 // Local migration: convert legacy bills (with itemsList string) to structured bills if needed
 (function migrateBillsLocal(){
   try {
-    const raw = JSON.parse(localStorage.getItem('bharat_bills') || '[]');
+    const raw = JSON.parse(localStorage.getItem(StoreScope.key('bharat_bills')) || '[]');
     let changed = false;
     const mapped = raw.map(b => {
       if (b && b.items && Array.isArray(b.items)) return b;
@@ -38,7 +38,7 @@ let bills = JSON.parse(localStorage.getItem('bharat_bills')) || [];
       return b;
     });
     if (changed) {
-      localStorage.setItem('bharat_bills', JSON.stringify(mapped));
+      localStorage.setItem(StoreScope.key('bharat_bills'), JSON.stringify(mapped));
       bills = mapped;
     }
   } catch (e) {
@@ -123,7 +123,7 @@ function updateProfit() {
   const todaySales = bills
     .filter(b => (new Date(b.date)).toISOString().slice(0,10) === todayIso)
     .reduce((s, b) => s + (parseFloat(b.total) || parseFloat(b.amount) || 0), 0);
-  const todayExp = JSON.parse(localStorage.getItem("bharat_expenses") || "[]")
+  const todayExp = JSON.parse(localStorage.getItem(StoreScope.key("bharat_expenses")) || "[]")
     .filter(e => e.date === todayIso)
     .reduce((s, e) => s + (parseFloat(e.amt) || 0), 0);
 

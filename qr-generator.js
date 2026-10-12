@@ -1,4 +1,4 @@
-let items = JSON.parse(localStorage.getItem("bharat_inventory") || "[]");
+let items = JSON.parse(localStorage.getItem(StoreScope.key("bharat_inventory")) || "[]");
 
 async function generateCode() {
   const name = document.getElementById('pname').value.trim();
@@ -39,7 +39,7 @@ async function generateCode() {
     items.push({ name, stock, price, gst, barcode, initialStock: stock });
   }
 
-  localStorage.setItem("bharat_inventory", JSON.stringify(items));
+  localStorage.setItem(StoreScope.key("bharat_inventory"), JSON.stringify(items));
 
   // Clear previous
   document.getElementById("generatedCode").innerHTML = "";

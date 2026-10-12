@@ -21,6 +21,7 @@
     .pay-btn:active { transform:scale(.97); }
   </style>
   <script src="load-manager.js"></script>
+  <script src="store-scope.js"></script>
 </head>
 <body>
   <script>if (localStorage.getItem('dark') === 'true') document.body.classList.add('dark');</script>
@@ -60,7 +61,7 @@
     const activeBank = activeIndex >= 0 ? banks[activeIndex] : null;
 
     // Fallback to old single shop-level UPI ID if no bank added yet
-    const shop = JSON.parse(localStorage.getItem("bharat_shop_details") || "{}");
+    const shop = JSON.parse(localStorage.getItem(StoreScope.key("bharat_shop_details")) || "{}");
 
     const upiId = activeBank ? activeBank.upiId : (shop.upiId || "yourupi@upi");
     const upiName = activeBank ? activeBank.ownerName : (shop.shopName || "Blink Store");

@@ -5,7 +5,7 @@ const defaultItems = [
 
 let items = [];
 let cart = [];
-let bills = JSON.parse(localStorage.getItem("bharat_bills") || "[]");
+let bills = JSON.parse(localStorage.getItem(StoreScope.key("bharat_bills")) || "[]");
 
 // Attempt to migrate any legacy string-based bills to structured objects
 try { migrateBills(); } catch (e) { /* migrate function may be defined later; safe to ignore here */ }
@@ -16,7 +16,7 @@ if (document.getElementById("owner")) {
 }
 
 function loadInventory(refreshUI = true) {
-  const saved = localStorage.getItem("bharat_inventory");
+  const saved = localStorage.getItem(StoreScope.key("bharat_inventory"));
   if (saved && saved.trim() !== "" && saved !== "[]") {
     try {
       items = JSON.parse(saved);
@@ -42,13 +42,13 @@ function loadInventory(refreshUI = true) {
 }
 
 function saveInventory() {
-  localStorage.setItem("bharat_inventory", JSON.stringify(items));
+  localStorage.setItem(StoreScope.key("bharat_inventory"), JSON.stringify(items));
 }
 
 loadInventory();
 
 window.addEventListener('storage', (e) => {
-  if (e.key === 'bharat_inventory') loadInventory();
+  if (e.key === StoreScope.key('bharat_inventory')) loadInventory();
 });
 window.addEventListener('focus', () => loadInventory());
 window.addEventListener('load', () => { try { migrateBills(); } catch(e){} });
@@ -178,7 +178,7 @@ function storeBill(mode) {
   };
 
   bills.push(bill);
-  localStorage.setItem("bharat_bills", JSON.stringify(bills));
+  localStorage.setItem(StoreScope.key("bharat_bills"), JSON.stringify(bills));
   return bill;
 }
 
@@ -215,7 +215,7 @@ function save() {
 // Migration helper: convert old string-based bills to new structured format
 function migrateBills() {
   try {
-    let raw = JSON.parse(localStorage.getItem('bharat_bills') || '[]');
+    let raw = JSON.parse(localStorage.getItem(StoreScope.key('bharat_bills')) || '[]');
     let changed = false;
     const migrated = raw.map(b => {
       if (b && b.items && Array.isArray(b.items)) return b; // already structured
@@ -248,7 +248,7 @@ function migrateBills() {
       return b;
     });
     if (changed) {
-      localStorage.setItem('bharat_bills', JSON.stringify(migrated));
+      localStorage.setItem(StoreScope.key('bharat_bills'), JSON.stringify(migrated));
       bills = migrated;
     } else {
       bills = raw;
@@ -261,9 +261,9 @@ function migrateBills() {
 // Shared restore helper (used by both Excel and JSON restore)
 async function applyRestore(inventory, restoredBills, expenses) {
   if (!confirm('This will REPLACE current inventory, bills' + (expenses ? ' & expenses' : '') + '. Proceed?')) return;
-  localStorage.setItem('bharat_inventory', JSON.stringify(inventory));
-  localStorage.setItem('bharat_bills', JSON.stringify(restoredBills));
-  if (expenses) localStorage.setItem('bharat_expenses', JSON.stringify(expenses));
+  localStorage.setItem(StoreScope.key('bharat_inventory'), JSON.stringify(inventory));
+  localStorage.setItem(StoreScope.key('bharat_bills'), JSON.stringify(restoredBills));
+  if (expenses) localStorage.setItem(StoreScope.key('bharat_expenses'), JSON.stringify(expenses));
 
   // Reset the archive too — backup file now holds everything (no duplicates)
   await ArchiveDB.clear();
@@ -362,7 +362,7 @@ function wa() {
     return;
   }
 
-  const shop = JSON.parse(localStorage.getItem("bharat_shop_details") || "{}");
+  const shop = JSON.parse(localStorage.getItem(StoreScope.key("bharat_shop_details")) || "{}");
   const shopName = shop.shopName || "Blink Bill";
   const shopPhone = shop.shopPhone || "";
 
@@ -434,7 +434,7 @@ function print() {
     return;
   }
 
-  const shop = JSON.parse(localStorage.getItem("bharat_shop_details") || "{}");
+  const shop = JSON.parse(localStorage.getItem(StoreScope.key("bharat_shop_details")) || "{}");
   const shopName = shop.shopName || "Blink Bill";
   const shopAddress = shop.shopAddress || "";
   const shopPhone = shop.shopPhone || "";
@@ -445,9 +445,9 @@ function print() {
   const dateStr = now.toLocaleDateString('en-IN');
   const timeStr = now.toLocaleTimeString('en-IN');
 
-  let billNo = localStorage.getItem("lastBillNo") || 1000;
+  let billNo = localStorage.getItem(StoreScope.key("lastBillNo")) || 1000;
   billNo = parseInt(billNo) + 1;
-  localStorage.setItem("lastBillNo", billNo);
+  localStorage.setItem(StoreScope.key("lastBillNo"), billNo);
 
   let itemsHtml = '';
   let subtotal = 0;
@@ -576,7 +576,7 @@ async function upi() {
     activeIndex = banks.length > 0 ? 0 : -1;
   }
   const bank = activeIndex >= 0 ? banks[activeIndex] : null;
-  const shop = JSON.parse(localStorage.getItem("bharat_shop_details") || "{}");
+  const shop = JSON.parse(localStorage.getItem(StoreScope.key("bharat_shop_details")) || "{}");
 
   if (!bank && !shop.upiId) {
     document.getElementById("upiQrBox").innerHTML = "";
@@ -645,7 +645,7 @@ async function autoArchiveOldBills() {
     if (!oldBills.length) return;
     await ArchiveDB.addMany(oldBills);
     bills = bills.filter(b => new Date(b.date).getTime() >= cutoff);
-    localStorage.setItem("bharat_bills", JSON.stringify(bills));
+    localStorage.setItem(StoreScope.key("bharat_bills"), JSON.stringify(bills));
     showToast(`📦 ${oldBills.length} old bill(s) moved to archive — space freed!`);
   } catch (e) {
     console.error("auto-archive failed", e); // non-fatal: billing continues normally
@@ -702,7 +702,7 @@ async function exportData() {
   }));
 
   // Sheet 3: Expenses
-  const expRows = (JSON.parse(localStorage.getItem("bharat_expenses") || "[]")).map(e => ({
+  const expRows = (JSON.parse(localStorage.getItem(StoreScope.key("bharat_expenses")) || "[]")).map(e => ({
     Date: e.date || "",
     Description: e.desc || "",
     Amount: Number(e.amt) || 0
@@ -767,7 +767,7 @@ function generateCode() {
     items.push({ name, stock, price, gst, barcode, initialStock: stock });
   }
 
-  localStorage.setItem("bharat_inventory", JSON.stringify(items));
+  localStorage.setItem(StoreScope.key("bharat_inventory"), JSON.stringify(items));
 
   const codeType = document.querySelector('input[name="codeType"]:checked').value;
   document.getElementById("generatedCode").innerHTML = "";
@@ -845,7 +845,7 @@ function downloadCode() {
 }
 
 function generateDynamicUPIQR(amount) {
-  const shop = JSON.parse(localStorage.getItem("bharat_shop_details") || "{}");
+  const shop = JSON.parse(localStorage.getItem(StoreScope.key("bharat_shop_details")) || "{}");
   const upiId = shop.upiId || "yourupi@upi";
   const shopName = shop.shopName || "Blink Bill";
   const transactionNote = "Bill Payment - Blink Bill";
@@ -955,7 +955,7 @@ async function downloadPDF() {
   doc.text("Blink Bill", 105, 20, { align: "center" });
 
   doc.setFontSize(12);
-  doc.text("Bill No: " + (parseInt(localStorage.getItem("lastBillNo") || 0) + 1), 20, 40);
+  doc.text("Bill No: " + (parseInt(localStorage.getItem(StoreScope.key("lastBillNo")) || 0) + 1), 20, 40);
   doc.text("Date: " + new Date().toLocaleDateString(), 20, 50);
 
   let y = 70;

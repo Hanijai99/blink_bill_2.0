@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Manage Stores — Blink Bill</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" href="logo195.png" type="image/png"/>
+<link rel="stylesheet" href="style.css"/>
+<link rel="stylesheet" href="loader.css"/>
+<link rel="stylesheet" href="assets/fontawesome/css/all.min.css"/>
+<script>
+  if (localStorage.getItem('dark') === 'true') document.body.classList.add('dark');
+  if (!localStorage.getItem('bharat_logged_in')) { location.href = 'login.html'; }
+</script>
+<script src="utils.js"></script>
+<script src="store-scope.js"></script>
+<style>
+  /* ===== Manage Stores ===== */
+  .store-note {
+    display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:16px;
+    background:linear-gradient(160deg,var(--surface),var(--surface-2));
+    border:1px solid var(--border-strong); box-shadow:var(--shadow);
+    font-size:.85rem; color:var(--muted); margin-bottom:16px; animation:riseIn .4s ease both;
+  }
+  .store-note i { color:var(--blue); font-size:1.1rem; }
+
+  .glass-card {
+    background:linear-gradient(160deg,var(--surface),var(--surface-2));
+    border:1px solid var(--border-strong); border-radius:20px;
+    padding:16px; box-shadow:var(--shadow); margin-bottom:16px; animation:riseIn .45s ease both;
+  }
+  .glass-card h2 { margin:0 0 12px; font-size:1.05rem; display:flex; align-items:center; gap:8px; }
+  .glass-card h2 i { color:var(--blue); }
+
+  /* Active store banner */
+  .active-card {
+    background:linear-gradient(135deg,#14b8a6,#0f766e); color:#fff;
+    border:1px solid rgba(255,255,255,.25); border-radius:20px;
+    padding:16px; box-shadow:0 12px 30px rgba(20,184,166,.30); margin-bottom:16px; animation:riseIn .45s ease both;
+  }
+  .active-card .tag {
+    display:inline-block; font-size:.7rem; letter-spacing:1px; text-transform:uppercase;
+    background:rgba(255,255,255,.22); padding:4px 10px; border-radius:999px; margin-bottom:8px;
+  }
+  .active-card h1 { margin:0 0 4px; font-size:1.4rem; }
+  .active-card .sub { font-size:.85rem; opacity:.92; }
+  .active-card .row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+  .active-card .stats {
+    display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;
+  }
+  .active-card .stat {
+    flex:1 1 30%; min-width:110px; background:rgba(255,255,255,.14); border-radius:14px; padding:10px; text-align:center;
+  }
+  .active-card .stat .l { font-size:.68rem; text-transform:uppercase; letter-spacing:.6px; opacity:.85; display:block; }
+  .active-card .stat .v { font-size:1.15rem; font-weight:800; }
+
+  /* Store cards list */
+  .store-card {
+    background:linear-gradient(160deg,var(--surface),var(--surface-2));
+    border:1px solid var(--border-strong); border-radius:18px;
+    padding:14px; margin-bottom:12px; box-shadow:var(--shadow);
+    border-left:4px solid var(--border-strong); animation:riseIn .4s ease both;
+  }
+  .store-card.active { border-left-color:var(--teal); }
+  .store-card .name { display:flex; align-items:center; gap:8px; font-weight:800; font-size:1.05rem; }
+  .store-card .name i { color:var(--teal); }
+  .store-card .meta { font-size:.82rem; color:var(--muted); margin:4px 0 8px; }
+  .store-card .stats { display:flex; gap:14px; font-size:.82rem; color:var(--text); margin-bottom:10px; flex-wrap:wrap; }
+  .store-card .stats b { color:var(--green-dark); }
+  body.dark .store-card .stats b { color:#4ade80; }
+  .store-card .actions { display:flex; flex-wrap:wrap; gap:8px; }
+  .store-card .actions .btn-main { flex-direction:row; width:auto; min-height:42px; padding:9px 14px; font-size:.85rem; }
+  .store-card .actions .btn-main i { font-size:.95rem; }
+  .store-card .actions .btn-main span { font-size:.8rem; }
+
+  /* Add store form */
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .form-grid .full { grid-column:1 / -1; }
+  .form-grid label { grid-column:1 / -1; font-size:.78rem; color:var(--muted); margin-top:2px; }
+  @media(max-width:480px){ .form-grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+  <div id="bharatLoader">
+  <div class="logo-container">
+    <img src="logo195.png" alt="Blink Bill Logo" class="logo">
+  </div>
+  
+  <h1>Blink Bill</h1>
+  <p>Loading, please wait... 🚀</p>
+</div>
+  <div class="container">
+
+    <div class="header">
+      <button onclick="location.href='index.html'" class="btn-main btn-slate" style="width:auto;"><i class="fa-solid fa-arrow-left"></i><span>Home</span></button>
+      <h1 style="font-size:1.2rem;"><i class="fa-solid fa-store" style="color:var(--teal);"></i> Manage Stores</h1>
+      <button id="modeBtn" onclick="toggleMode()" class="btn-main btn-purple" style="width:auto;"><i class="fa-solid fa-moon"></i><span>Dark Mode</span></button>
+    </div>
+
+    <div class="store-note">
+      <i class="fa-solid fa-circle-info"></i>
+      <span>Each store has its <strong>own separate data</strong> — bills, stock, expenses, shop details &amp; bill numbers. Billing, QR, dashboard &amp; AI assistant automatically work on the <strong>active store</strong>.</span>
+    </div>
+
+    <!-- ACTIVE STORE BANNER -->
+    <div class="active-card" id="activeCard">
+      <span class="tag"><i class="fa-solid fa-bolt"></i> Active store</span>
+      <h1 id="activeName">—</h1>
+      <div class="sub" id="activeMeta"></div>
+      <div class="row">
+        <button onclick="location.href='index.html'" class="btn-main btn-blue" style="width:auto; flex-direction:row; gap:8px;"><i class="fa-solid fa-file-invoice"></i><span>Open Billing</span></button>
+        <button onclick="location.href='bill-settings.html'" class="btn-main btn-cyan" style="width:auto; flex-direction:row; gap:8px;"><i class="fa-solid fa-gear"></i><span>Shop Settings</span></button>
+      </div>
+      <div class="stats" id="activeStats"></div>
+    </div>
+
+    <!-- ADD STORE -->
+    <div class="glass-card">
+      <h2><i class="fa-solid fa-plus"></i> Add New Store</h2>
+      <div class="form-grid">
+        <input type="text" id="stName" placeholder="Store name *" class="input full"/>
+        <input type="text" id="stAddress" placeholder="Address" class="input"/>
+        <input type="tel" id="stPhone" placeholder="Phone" class="input"/>
+        <input type="text" id="stGstin" placeholder="GSTIN" class="input"/>
+      </div>
+      <button onclick="addStore()" class="btn-main btn-green" style="margin-top:12px;"><i class="fa-solid fa-store"></i><span>ADD STORE</span></button>
+    </div>
+
+    <!-- STORES LIST -->
+    <div class="glass-card">
+      <h2><i class="fa-solid fa-list"></i> Your Stores (<span id="storeCount">0</span>)</h2>
+      <div id="storeList"></div>
+    </div>
+
+  </div>
+
+  <!-- LOADER JS -->
+  <script>
+    window.addEventListener("load", () => {
+      const loader = document.getElementById("bharatLoader");
+      if (!loader) return;
+      setTimeout(() => {
+        loader.style.opacity = "0";
+        setTimeout(() => {
+          if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+        }, 1300);
+      }, 600);
+    });
+    setTimeout(() => {
+      const loader = document.getElementById("bharatLoader");
+      if (loader && loader.parentNode) {
+        loader.style.opacity = "0";
+        setTimeout(() => { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 1000);
+      }
+    }, 6000);
+  </script>
+
+  <script>
+    // ===================== MANAGE STORES =====================
+    const inr = n => '₹' + Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2, maximumFractionDigits:2});
+
+    function storeStats(id){
+      let bills = [], items = [], expenses = [];
+      try { bills = JSON.parse(localStorage.getItem('bharat_bills_' + id) || '[]'); } catch(e) {}
+      try { items = JSON.parse(localStorage.getItem('bharat_inventory_' + id) || '[]'); } catch(e) {}
+      try { expenses = JSON.parse(localStorage.getItem('bharat_expenses_' + id) || '[]'); } catch(e) {}
+      const sales = bills.reduce((a,b)=>a+(parseFloat(b.total)||parseFloat(b.amount)||0),0);
+      const exp = expenses.reduce((a,e)=>a+(parseFloat(e.amt)||0),0);
+      return { bills: bills.length, items: items.length, sales, exp };
+    }
+
+    function render(){
+      const list = StoreScope.raw();
+      const active = StoreScope.activeId();
+
+      document.getElementById('storeCount').textContent = list.length;
+
+      // Active banner
+      const a = list.find(s => s.id === active) || { name:'—', address:'', phone:'', gstin:'' };
+      const as = storeStats(active);
+      document.getElementById('activeName').textContent = a.name;
+      document.getElementById('activeMeta').textContent =
+        [a.address, a.phone ? '📞 ' + a.phone : '', a.gstin ? 'GSTIN: ' + a.gstin : ''].filter(Boolean).join(' · ') || 'No shop details yet — set them in Shop Settings.';
+      document.getElementById('activeStats').innerHTML =
+        '<div class="stat"><span class="l">Bills</span><span class="v">' + as.bills + '</span></div>' +
+        '<div class="stat"><span class="l">Sales</span><span class="v">' + inr(as.sales) + '</span></div>' +
+        '<div class="stat"><span class="l">Products</span><span class="v">' + as.items + '</span></div>';
+
+      // List
+      const wrap = document.getElementById('storeList');
+      if (!list.length) {
+        wrap.innerHTML = '<p class="t-muted" style="text-align:center; padding:20px;">No stores yet — add your first store above.</p>';
+        return;
+      }
+      wrap.innerHTML = list.map(s => {
+        const st = storeStats(s.id);
+        const isActive = s.id === active;
+        return `
+          <div class="store-card${isActive ? ' active' : ''}">
+            <div class="name"><i class="fa-solid fa-store"></i> ${esc(s.name)} ${isActive ? '<span class="tag" style="margin:0;"></span>' : ''}</div>
+            <div class="meta">${[esc(s.address), s.phone ? '📞 ' + esc(s.phone) : '', s.gstin ? 'GSTIN: ' + esc(s.gstin) : ''].filter(Boolean).join(' · ') || 'No details set'}</div>
+            <div class="stats">
+              <span>🧾 <b>${st.bills}</b> bills</span>
+              <span>💰 <b>${inr(st.sales)}</b> sales</span>
+              <span>📦 <b>${st.items}</b> products</span>
+              <span>💸 <b>${inr(st.exp)}</b> expenses</span>
+            </div>
+            <div class="actions">
+              ${isActive
+                ? '<button class="btn-main btn-green" disabled style="opacity:.75;"><i class="fa-solid fa-circle-check"></i><span>Active</span></button>'
+                : '<button class="btn-main btn-green" onclick="useStore(\'' + s.id + '\')"><i class="fa-solid fa-right-to-bracket"></i><span>Use this store</span></button>'}
+              <button class="btn-main btn-blue" onclick="location.href=\'index.html\'"><i class="fa-solid fa-file-invoice"></i><span>Open Billing</span></button>
+              <button class="btn-main btn-maroon" onclick="delStore(\'' + s.id + '\')"><i class="fa-solid fa-trash"></i><span>Delete</span></button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function addStore(){
+      const name = document.getElementById('stName').value.trim();
+      if (!name) return showToast('Store name required!', true);
+      StoreScope.addStore({
+        name,
+        address: document.getElementById('stAddress').value.trim(),
+        phone: document.getElementById('stPhone').value.trim(),
+        gstin: document.getElementById('stGstin').value.trim()
+      });
+      ['stName','stAddress','stPhone','stGstin'].forEach(id => document.getElementById(id).value = '');
+      showToast('✅ Store added! Now switch to it to start billing.');
+      render();
+    }
+
+    function useStore(id){
+      StoreScope.switchStore(id);
+      showToast('🏪 Switched to ' + esc(StoreScope.activeStore().name));
+      render();
+    }
+
+    function delStore(id){
+      if (!confirm('Delete this store AND all its bills, stock & expenses? This cannot be undone.')) return;
+      StoreScope.removeStore(id);
+      showToast('🗑️ Store deleted');
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

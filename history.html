@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="loader.css" />
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css" />
   <script src="utils.js"></script>
+  <script src="store-scope.js"></script>
   <link rel="icon" href="logo195.png" type="image/png" />
 
 </head>
@@ -33,7 +34,7 @@
   </div>
 
   <script>
-    let allBills = JSON.parse(localStorage.getItem("bharat_bills") || "[]");
+    let allBills = JSON.parse(localStorage.getItem(StoreScope.key("bharat_bills")) || "[]");
 
     // Merge archived bills (2+ months, stored in IndexedDB) into the view
     if (window.ArchiveDB) {

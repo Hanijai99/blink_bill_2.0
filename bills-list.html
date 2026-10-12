@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css" />
   <link rel="icon" href="logo195.png" type="image/png" />
   <script src="utils.js"></script>
+  <script src="store-scope.js"></script>
   <style>
     .bills-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; }
     .bills-head h1 { text-align:left; font-size:1.5rem; margin:0; }
@@ -91,7 +92,7 @@
     let allBills = [];
 
     function loadBills() {
-      try { allBills = JSON.parse(localStorage.getItem("bharat_bills") || "[]"); } catch (e) { allBills = []; }
+      try { allBills = JSON.parse(localStorage.getItem(StoreScope.key("bharat_bills")) || "[]"); } catch (e) { allBills = []; }
       // Merge archived bills (stored in IndexedDB by the archiver)
       if (window.ArchiveDB) {
         ArchiveDB.getAll().then(arc => {

@@ -3,11 +3,11 @@
 
 (function(){
   function getBills() {
-    try { return JSON.parse(localStorage.getItem('bharat_bills')||'[]'); }
+    try { return JSON.parse(localStorage.getItem(StoreScope.key('bharat_bills'))||'[]'); }
     catch(e){ return []; }
   }
   function getInventory(){
-    try { return JSON.parse(localStorage.getItem('bharat_inventory')||'[]'); }
+    try { return JSON.parse(localStorage.getItem(StoreScope.key('bharat_inventory'))||'[]'); }
     catch(e){ return []; }
   }
   function getUsers(){
