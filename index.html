@@ -50,7 +50,7 @@
       <button onclick="logout()" class="btn-main btn-red"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button>
     </div>
 
-    <script>try{var sb=document.getElementById('storeBadge');if(sb&&window.StoreScope)sb.textContent=StoreScope.activeStore().name;}catch(e){}</script>
+    <script>try{var sb=document.getElementById('storeBadge');if(sb&&(window.StoreScope||typeof StoreScope!=='undefined'))sb.textContent=StoreScope.activeStore().name;}catch(e){}</script>
 
     <div class="info">Logged in as: <strong id="owner">Owner</strong></div>
 

@@ -4,7 +4,7 @@
 // The active store decides which scoped key every page reads/writes.
 // Legacy single-store data (keys WITHOUT suffix) is migrated once into "main".
 
-const StoreScope = (() => {
+var StoreScope = (() => {
   function raw() {
     try { return JSON.parse(localStorage.getItem("bharat_stores") || "[]"); } catch (e) { return []; }
   }
