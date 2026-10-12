@@ -220,13 +220,33 @@ button:focus-visible { outline:3px solid var(--ring); outline-offset:2px; }
 .btn-main {
   background:linear-gradient(160deg,#60a5fa,#3b82f6 45%,#1e40af);
   border:1px solid rgba(255,255,255,.24);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 10px 26px rgba(37,99,235,.30);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 10px 26px rgba(15,23,42,.22);
   flex-direction:column; gap:8px;
   min-height:64px; padding:12px 10px; width:100%;
 }
 .btn-main i { font-size:1.4rem; }
 .btn-main span { font-size:.85rem; letter-spacing:.6px; display:block; }
-.btn-main:hover { box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 14px 34px rgba(37,99,235,.42); }
+.btn-main:hover { box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 14px 34px rgba(15,23,42,.30); }
+
+/* ---------- Tile color palette (each home-screen button its own color) ---------- */
+.btn-green   { background:linear-gradient(135deg,#22c55e,#15803d); }
+.btn-blue    { background:linear-gradient(135deg,#3b82f6,#1e40af); }
+.btn-wa      { background:linear-gradient(135deg,#25d366,#128c7e); }
+.btn-upi     { background:linear-gradient(135deg,#a855f7,#7c3aed); }
+.btn-purple  { background:linear-gradient(135deg,#8b5cf6,#6d28d9); }
+.btn-teal    { background:linear-gradient(135deg,#14b8a6,#0f766e); }
+.btn-accent  { background:linear-gradient(135deg,#f59e0b,#ea580c); }
+.btn-orange  { background:linear-gradient(135deg,#fb923c,#ea580c); }
+.btn-upi-manage { background:linear-gradient(135deg,#6366f1,#4f46e5); }
+.btn-slate   { background:linear-gradient(135deg,#64748b,#334155); }
+.btn-sky     { background:linear-gradient(135deg,#38bdf8,#0369a1); }
+.btn-rose    { background:linear-gradient(135deg,#fb7185,#e11d48); }
+.btn-emerald { background:linear-gradient(135deg,#34d399,#059669); }
+.btn-cyan    { background:linear-gradient(135deg,#22d3ee,#0e7490); }
+.btn-lime    { background:linear-gradient(135deg,#a3e635,#4d7c0f); }
+.btn-charcoal{ background:linear-gradient(135deg,#475569,#1e293b); }
+.btn-maroon  { background:linear-gradient(135deg,#f43f5e,#be123c); }
+.btn-red     { background:linear-gradient(135deg,#ef4444,#b91c1c); }
 
 /* Header actions — SAME height as every other button */
 .header .btn-main {
