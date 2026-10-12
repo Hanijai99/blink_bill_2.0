@@ -247,6 +247,7 @@ button:focus-visible { outline:3px solid var(--ring); outline-offset:2px; }
 .btn-charcoal{ background:linear-gradient(135deg,#475569,#1e293b); }
 .btn-maroon  { background:linear-gradient(135deg,#f43f5e,#be123c); }
 .btn-red     { background:linear-gradient(135deg,#ef4444,#b91c1c); }
+.btn-ai      { background:linear-gradient(135deg,#22d3ee,#4338ca); }
 
 /* Header actions — SAME height as every other button */
 .header .btn-main {

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Business Assistant — Blink Bill</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" href="logo195.png" type="image/png"/>
+<link rel="stylesheet" href="style.css"/>
+<link rel="stylesheet" href="loader.css"/>
+<link rel="stylesheet" href="assets/fontawesome/css/all.min.css"/>
+<script>
+  if (localStorage.getItem('dark') === 'true') document.body.classList.add('dark');
+</script>
+<style>
+  /* ===== AI Assistant chat ===== */
+  body { padding-bottom:20px; }
+  .ai-sub { display:block; font-size:.78rem; color:var(--muted); margin-top:2px; }
+
+  /* Smart alerts bar */
+  .alerts { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+  .alert {
+    display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:14px;
+    background:linear-gradient(160deg,var(--surface),var(--surface-2));
+    border:1px solid var(--border-strong); box-shadow:var(--shadow);
+    font-size:.82rem; color:var(--text); animation:riseIn .4s ease both;
+  }
+  .alert i { font-size:.95rem; }
+  .alert.ok    { border-color:var(--green); }
+  .alert.ok i  { color:var(--green); }
+  .alert.warn  { border-color:var(--orange); }
+  .alert.warn i{ color:var(--orange); }
+  .alert.bad   { border-color:var(--red); }
+  .alert.bad i { color:var(--red); }
+
+  /* Chat window */
+  .chat {
+    display:flex; flex-direction:column; gap:12px;
+    background:linear-gradient(160deg,var(--surface),var(--surface-2));
+    border:1px solid var(--border-strong); border-radius:20px;
+    padding:14px; height:min(44vh,420px); min-height:260px; overflow-y:auto;
+    box-shadow:var(--shadow);
+  }
+  .chat::-webkit-scrollbar { width:6px; }
+  .chat::-webkit-scrollbar-thumb { background:var(--border-strong); border-radius:3px; }
+
+  .msg { max-width:88%; padding:12px 14px; border-radius:16px; font-size:.95rem; line-height:1.55; animation:riseIn .35s ease both; }
+  .msg.user {
+    align-self:flex-end; background:linear-gradient(135deg,#3b82f6,#1e40af); color:#fff;
+    border-bottom-right-radius:6px; box-shadow:0 8px 20px rgba(37,99,235,.28);
+  }
+  .msg.ai {
+    align-self:flex-start; background:var(--card); border:1px solid var(--border);
+    border-bottom-left-radius:6px; box-shadow:var(--shadow); color:var(--text);
+  }
+  .msg.ai strong { color:var(--green-dark); }
+  body.dark .msg.ai strong { color:#4ade80; }
+  .msg.ai .muted { color:var(--muted); font-size:.78rem; }
+
+  /* Small stat chips inside answers */
+  .kpi-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .kpi {
+    flex:1 1 42%; background:var(--surface-2); border:1px solid var(--border);
+    border-radius:12px; padding:8px 10px; text-align:center;
+  }
+  .kpi .l { font-size:.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; display:block; }
+  .kpi .v { font-size:1.05rem; font-weight:800; }
+  .kpi .s { font-size:.72rem; color:var(--muted); }
+  .kpi.green .v { color:var(--green-dark); }
+  .kpi.red   .v { color:var(--red); }
+  body.dark .kpi.green .v { color:#4ade80; }
+  body.dark .kpi.red   .v { color:#fb7185; }
+
+  ul.ai-list { list-style:none; margin:8px 0 0; padding:0; }
+  ul.ai-list li { display:flex; justify-content:space-between; gap:10px; padding:7px 2px; border-bottom:1px dashed var(--border); font-size:.9rem; }
+  ul.ai-list li:last-child { border-bottom:none; }
+  ul.ai-list li span:first-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ai-h { display:flex; align-items:center; gap:8px; font-weight:800; margin-bottom:2px; }
+  .ai-h i { color:var(--blue); }
+
+  /* Quick chips */
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+  .chip {
+    display:inline-flex; align-items:center; gap:7px; padding:9px 13px; border-radius:999px;
+    background:linear-gradient(160deg,var(--surface),var(--surface-2));
+    border:1px solid var(--border-strong); color:var(--text); font-size:.82rem; cursor:pointer;
+    box-shadow:var(--shadow); transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .chip:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+  .chip:active { transform:scale(.96); }
+  .chip i { color:var(--blue); }
+
+  /* Input row */
+  .input-row { display:flex; gap:10px; align-items:stretch; }
+  .input-row input { flex:1; min-height:64px; font-size:1rem; }
+  .send-btn {
+    width:64px; height:64px; min-height:64px; border-radius:50%;
+    border:1px solid rgba(255,255,255,.28); cursor:pointer; color:#fff;
+    background:linear-gradient(135deg,#22d3ee,#4338ca);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 10px 26px rgba(67,56,202,.35);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .send-btn:hover { transform:translateY(-2px); box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 14px 34px rgba(67,56,202,.45); }
+  .send-btn:active { transform:scale(.94); }
+  .send-btn i { font-size:1.25rem; }
+
+  /* Thinking dots */
+  .msg.thinking { display:flex; gap:5px; align-items:center; }
+  .msg.thinking .dot { width:7px; height:7px; border-radius:50%; background:var(--muted); animation:blink 1s infinite; }
+  .msg.thinking .dot:nth-child(2){ animation-delay:.18s; }
+  .msg.thinking .dot:nth-child(3){ animation-delay:.36s; }
+  @keyframes blink { 0%,80%,100%{opacity:.25; transform:translateY(0);} 40%{opacity:1; transform:translateY(-3px);} }
+
+  @media(max-width:480px){
+    .msg { max-width:94%; }
+    .chat { height:40vh; }
+  }
+</style>
+</head>
+<body>
+  <div id="bharatLoader">
+  <div class="logo-container">
+    <img src="logo195.png" alt="Blink Bill Logo" class="logo">
+  </div>
+  
+  <h1>Blink Bill</h1>
+  <p>Loading, please wait... 🚀</p>
+</div>
+  <div class="container">
+  <div class="header">
+    <button onclick="location.href='index.html'" class="btn-main btn-slate" style="width:auto;"><i class="fa-solid fa-arrow-left"></i><span>Home</span></button>
+    <h1 style="font-size:1.2rem;"><i class="fa-solid fa-robot" style="color:var(--blue);"></i> AI Assistant<span class="ai-sub">Auto-tracks everything</span></h1>
+    <button id="modeBtn" onclick="toggleMode()" class="btn-main btn-purple" style="width:auto;"><i class="fa-solid fa-moon"></i><span>Dark Mode</span></button>
+  </div>
+
+  <!-- Smart alerts generated by the assistant -->
+  <div id="alerts" class="alerts"></div>
+
+  <!-- Chat window -->
+  <div id="chat" class="chat"></div>
+
+  <!-- Quick question chips -->
+  <div id="chips" class="chips"></div>
+
+  <!-- Ask box -->
+  <div class="input-row">
+    <input id="q" type="text" class="input" placeholder='Ask anything… e.g. "today profit" or "low stock"' onkeydown="if(event.key==='Enter')send()" autofocus/>
+    <button class="send-btn" onclick="send()" title="Ask"><i class="fa-solid fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<script src="utils.js"></script>
+<script>
+// ===================== AI BUSINESS ASSISTANT =====================
+// Reads the shop's live data (bills, stock, expenses, shop details)
+// and answers natural questions — fully offline, runs 100% on-device.
+
+if (!localStorage.getItem('bharat_logged_in')) { location.href = 'login.html'; }
+function toggleMode(){ toggleTheme(); }
+
+// ---------- Data loaders (live from localStorage) ----------
+const DB = {
+  bills:     (()=>{ try { return JSON.parse(localStorage.getItem('bharat_bills')||'[]'); } catch(e){ return []; } })(),
+  items:     (()=>{ try { return JSON.parse(localStorage.getItem('bharat_inventory')||'[]'); } catch(e){ return []; } })(),
+  expenses:  (()=>{ try { return JSON.parse(localStorage.getItem('bharat_expenses')||'[]'); } catch(e){ return []; } })(),
+  shop:      (()=>{ try { return JSON.parse(localStorage.getItem('bharat_shop_details')||'{}'); } catch(e){ return {}; } })(),
+  owner:     localStorage.getItem('owner') || 'Owner'
+};
+
+// ---------- Helpers ----------
+const inr = n => '₹' + Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2, maximumFractionDigits:2});
+const dayKey  = d => { try { return new Date(d).toDateString(); } catch(e){ return ''; } };
+const monthKey= d => { try { return new Date(d).toISOString().slice(0,7); } catch(e){ return ''; } };
+const isoDay  = d => { try { return new Date(d).toISOString().slice(0,10); } catch(e){ return ''; } };
+const weekStart = (()=>{ const d=new Date(); d.setDate(d.getDate()-6); d.setHours(0,0,0,0); return d; })();
+const weekStartISO = weekStart.toISOString().slice(0,10);
+const todayISO = new Date().toISOString().slice(0,10);
+const todayKey = dayKey(new Date());
+const thisMonth = new Date().toISOString().slice(0,7);
+
+const billTotal = b => parseFloat(b.total) || parseFloat(b.amount) || 0;
+const sum = arr => arr.reduce((a,b)=>a+(parseFloat(b)||0),0);
+
+const allTodayBills  = () => DB.bills.filter(b => dayKey(b.date) === todayKey);
+const allWeekBills   = () => DB.bills.filter(b => { try { const d=new Date(b.date); return d>=weekStart && d<=new Date(); } catch(e){ return false; } });
+const allMonthBills  = () => DB.bills.filter(b => monthKey(b.date) === thisMonth);
+const allTodayExp    = () => DB.expenses.filter(e => (e.date||'') === todayISO);
+const allWeekExp     = () => DB.expenses.filter(e => (e.date||'') >= weekStartISO);
+const allMonthExp    = () => DB.expenses.filter(e => (e.date||'').slice(0,7) === thisMonth);
+
+function statCard(bl){
+  const total = sum(bl.map(billTotal));
+  const cash  = sum(bl.filter(b => b.paymentMode === 'cash').map(billTotal));
+  const upi   = total - cash;
+  return {
+    count: bl.length, total, cash, upi, avg: bl.length ? total/bl.length : 0,
+    cashCount: bl.filter(b=>b.paymentMode==='cash').length,
+    upiCount: bl.length - bl.filter(b=>b.paymentMode==='cash').length
+  };
+}
+function itemSales(bl){
+  const m = {};
+  bl.forEach(b => (b.items||[]).forEach(it => { const n = String(it.name||'Unknown'); m[n] = (m[n]||0) + (parseFloat(it.qty)||0); }));
+  return Object.entries(m).sort((a,b)=>b[1]-a[1]);
+}
+function bestDay(bl){
+  const m = {};
+  bl.forEach(b => { const k = dayKey(b.date); m[k] = (m[k]||0) + billTotal(b); });
+  const top = Object.entries(m).sort((a,b)=>b[1]-a[1])[0];
+  return top ? top : null;
+}
+function customers(){
+  const m = {};
+  DB.bills.forEach(b => {
+    const n = (b.name||'Walk-in').trim().toLowerCase();
+    const key = n || 'walk-in';
+    if (!m[key]) m[key] = { name: (b.name||'Walk-in').trim(), bills: 0, spend: 0 };
+    m[key].bills++; m[key].spend += billTotal(b);
+  });
+  return Object.values(m).sort((a,b)=>b.spend-a.spend);
+}
+function stockPerc(i){ return i.initialStock ? (i.stock/(i.initialStock||1))*100 : 100; }
+
+// ---------- Chat rendering ----------
+const chat = document.getElementById('chat');
+function scrollChat(){ chat.scrollTop = chat.scrollHeight; }
+
+function addMsg(html, who){
+  const d = document.createElement('div');
+  d.className = 'msg ' + who;
+  d.innerHTML = html;
+  chat.appendChild(d);
+  scrollChat();
+  return d;
+}
+function thinking(){
+  const d = document.createElement('div');
+  d.className = 'msg ai thinking';
+  d.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+  chat.appendChild(d); scrollChat();
+  return d;
+}
+
+// ---------- Answer builders ----------
+const h_l = (icon,title) => '<div class="ai-h"><i class="fa-solid ' + icon + '"></i>' + esc(title) + '</div>';
+const kpi = (label,value,sub,cls) => '<div class="kpi '+(cls||'')+'"><span class="l">'+esc(label)+'</span><span class="v">'+value+'</span>'+(sub?'<span class="s">'+esc(sub)+'</span>':'')+'</div>';
+const kpiRow = kpis => '<div class="kpi-row">'+kpis.join('')+'</div>';
+const list = rows => '<ul class="ai-list">'+rows.map(r=>'<li><span>'+r[0]+'</span><strong>'+r[1]+'</strong></li>').join('')+'</ul>';
+
+function answerToday(){
+  const s = statCard(allTodayBills());
+  const ex = sum(allTodayExp().map(e=>e.amt));
+  const profit = s.total - ex;
+  const top = itemSales(allTodayBills()).slice(0,3);
+  return h_l('fa-calendar-day','Today — ' + new Date().toLocaleDateString('en-IN',{weekday:'long', day:'numeric', month:'short'}))
+    + kpiRow([
+        kpi('Sales', inr(s.total), s.count+' bills'),
+        kpi('Profit', inr(profit), 'Sales − Expenses', profit>=0?'green':'red'),
+        kpi('Cash', inr(s.cash), s.cashCount+' bills'),
+        kpi('UPI / Online', inr(s.upi), s.upiCount+' bills')
+      ])
+    + (top.length ? '<div style="margin-top:8px;"><strong>Top items today:</strong>' + list(top.map(t=>[t[0], t[1]+' sold'])).replace(/^<ul/,'<ul style="margin-top:4px;"') + '</div>' : '')
+    + '<div class="muted" style="margin-top:8px;">Expenses today: ' + inr(ex) + '</div>';
+}
+function answerWeek(){
+  const s = statCard(allWeekBills());
+  const ex = sum(allWeekExp().map(e=>e.amt));
+  const best = bestDay(allWeekBills());
+  return h_l('fa-chart-line','Last 7 Days')
+    + kpiRow([
+        kpi('Sales', inr(s.total), s.count+' bills'),
+        kpi('Profit', inr(s.total - ex), 'Sales − Expenses', (s.total-ex)>=0?'green':'red'),
+        kpi('Avg / bill', inr(s.avg)),
+        kpi('Bills', s.count)
+      ])
+    + (best ? '<div class="muted" style="margin-top:8px;">Best day: <strong>' + esc(best[0]) + '</strong> (' + inr(best[1]) + ')</div>' : '')
+    + '<div class="muted">Expenses (7 days): ' + inr(ex) + '</div>';
+}
+function answerMonth(){
+  const s = statCard(allMonthBills());
+  const ex = sum(allMonthExp().map(e=>e.amt));
+  return h_l('fa-calendar-alt','This Month — ' + new Date().toLocaleDateString('en-IN',{month:'long', year:'numeric'}))
+    + kpiRow([
+        kpi('Sales', inr(s.total), s.count+' bills'),
+        kpi('Profit', inr(s.total - ex), 'Sales − Expenses', (s.total-ex)>=0?'green':'red'),
+        kpi('Avg / bill', inr(s.avg)),
+        kpi('Expenses', inr(ex), allMonthExp().length+' entries')
+      ]);
+}
+function answerProfit(){
+  const t = statCard(allTodayBills()), te = sum(allTodayExp().map(e=>e.amt));
+  const w = statCard(allWeekBills()),  we = sum(allWeekExp().map(e=>e.amt));
+  const m = statCard(allMonthBills()), me = sum(allMonthExp().map(e=>e.amt));
+  return h_l('fa-coins','Profit Tracker')
+    + kpiRow([
+        kpi('Today', inr(t.total - te), 'Sales '+inr(t.total), (t.total-te)>=0?'green':'red'),
+        kpi('7 Days', inr(w.total - we), 'Sales '+inr(w.total), (w.total-we)>=0?'green':'red'),
+        kpi('This Month', inr(m.total - me), 'Sales '+inr(m.total), (m.total-me)>=0?'green':'red'),
+        kpi('Net profit', inr(m.total - me), 'Sales − Expenses', (m.total-me)>=0?'green':'red')
+      ]);
+}
+function answerExpenses(specific){
+  const ex = specific === 'today' ? allTodayExp() : (specific === 'week' ? allWeekExp() : allMonthExp());
+  const total = sum(ex.map(e=>e.amt));
+  const byDesc = {};
+  ex.forEach(e => { const d = e.desc||'Other'; byDesc[d] = (byDesc[d]||0)+(parseFloat(e.amt)||0); });
+  const rows = Object.entries(byDesc).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  return h_l('fa-money-bill-wave','Expenses — ' + (specific==='today'?'Today':specific==='week'?'Last 7 days':'This month'))
+    + '<strong style="font-size:1.35rem;">' + inr(total) + '</strong> <span class="muted">(' + ex.length + ' entries)</span>'
+    + (rows.length ? list(rows.map(r=>[r[0], inr(r[1])])) : '<div class="muted" style="margin-top:8px;">No expenses recorded.</div>');
+}
+function answerStock(){
+  const low = DB.items.filter(i => stockPerc(i) < 20);
+  const mid = DB.items.filter(i => { const p = stockPerc(i); return p >= 40 && p <= 60; });
+  const stockValue = sum(DB.items.map(i => (parseFloat(i.stock)||0) * (parseFloat(i.price)||0)));
+  let out = h_l('fa-boxes-stacked','Stock Health')
+    + kpiRow([
+        kpi('Products', DB.items.length),
+        kpi('Stock value', inr(stockValue)),
+        kpi('Low stock', low.length, '<20%', low.length?'red':'green'),
+        kpi('Restock soon', mid.length, '40–60%')
+      ]);
+  out += '<div style="margin-top:8px;"><strong>⚠️ Low stock — reorder now:</strong>';
+  out += low.length ? list(low.slice(0,6).map(i=>[i.name, i.stock + ' left'])) : '<div class="muted">All good, nothing critical.</div>';
+  out += '</div>';
+  if (mid.length) out += '<div class="muted" style="margin-top:8px;">Restock soon: ' + mid.slice(0,4).map(i=>esc(i.name)+' ('+i.stock+')').join(', ') + '</div>';
+  return out;
+}
+function answerTopItems(){
+  const top = itemSales(DB.bills).slice(0,7);
+  return h_l('fa-trophy','Top Selling Items — all time')
+    + (top.length ? list(top.map(t=>[t[0], t[1] + ' sold'])) : '<div class="muted" style="margin-top:8px;">No item sales yet.</div>');
+}
+function answerCustomers(){
+  const c = customers();
+  const best = c[0];
+  const repeat = c.filter(x=>x.bills>1);
+  return h_l('fa-users','Customer Insights')
+    + kpiRow([
+        kpi('Customers', c.length),
+        kpi('Repeat buyers', repeat.length),
+        kpi('Best customer', best ? esc(best.name) : '—', best ? best.bills+' bills' : ''),
+        kpi('Best spend', best ? inr(best.spend) : '—')
+      ])
+    + (c.length ? '<div style="margin-top:8px;"><strong>Top customers:</strong>' + list(c.slice(0,5).map(x=>[x.name, x.bills+' bills · '+inr(x.spend)])).replace(/^<ul/,'<ul style="margin-top:4px;"') + '</div>' : '');
+}
+function answerPayments(){
+  const c = statCard(DB.bills);
+  const cashP = c.total ? (c.cash/c.total)*100 : 0;
+  const upiP = 100 - cashP;
+  return h_l('fa-credit-card','Cash vs UPI — all time')
+    + kpiRow([
+        kpi('Cash', inr(c.cash), c.cashCount+' bills'),
+        kpi('UPI / Online', inr(c.upi), c.upiCount+' bills'),
+        kpi('Cash share', cashP.toFixed(0)+'%'),
+        kpi('UPI share', upiP.toFixed(0)+'%')
+      ]);
+}
+function answerBills(){
+  const s = statCard(DB.bills);
+  return h_l('fa-file-invoice','Billing Overview')
+    + kpiRow([
+        kpi('Total bills', s.count),
+        kpi('Total sales', inr(s.total)),
+        kpi('Avg / bill', inr(s.avg)),
+        kpi('Items sold', DB.bills.reduce((a,b)=>a+((b.items||[]).length||0),0))
+      ]);
+}
+function answerShop(){
+  const s = DB.shop;
+  return h_l('fa-store','Shop Details')
+    + '<strong>' + esc(s.name || 'Unnamed shop') + '</strong>'
+    + '<div class="muted">Owner: ' + esc(DB.owner) + '</div>'
+    + (s.address ? '<div class="muted">📍 ' + esc(s.address) + '</div>' : '')
+    + (s.phone ? '<div class="muted">📞 ' + esc(s.phone) + '</div>' : '')
+    + (s.gstin ? '<div class="muted">GSTIN: ' + esc(s.gstin) + '</div>' : '')
+    + '<div class="muted" style="margin-top:8px;">Set/update this in Shop Settings.</div>';
+}
+function answerFull(){
+  const s = statCard(DB.bills);
+  const ex = sum(DB.expenses.map(e=>e.amt));
+  const c = customers();
+  const best = bestDay(DB.bills);
+  const low = DB.items.filter(i=>stockPerc(i)<20).length;
+  return h_l('fa-brain','Business Intelligence Report')
+    + '<div class="muted" style="margin-bottom:4px;">Auto-generated from: ' + DB.bills.length + ' bills · ' + DB.items.length + ' products · ' + DB.expenses.length + ' expenses</div>'
+    + kpiRow([
+        kpi('Total sales', inr(s.total), s.count+' bills'),
+        kpi('Est. net', inr(s.total - ex), 'Sales − Expenses', (s.total-ex)>=0?'green':'red'),
+        kpi('Avg / bill', inr(s.avg)),
+        kpi('Customers', c.length)
+      ])
+    + (best ? '<div class="muted" style="margin-top:8px;">🏆 All-time best day: <strong>' + esc(best[0]) + '</strong> — ' + inr(best[1]) + '</div>' : '')
+    + (c[0] ? '<div class="muted">⭐ Best customer: <strong>' + esc(c[0].name) + '</strong> — ' + inr(c[0].spend) + ' (' + c[0].bills + ' bills)</div>' : '')
+    + (low ? '<div class="muted" style="color:var(--red);">⚠️ ' + low + ' product' + (low>1?'s':'') + ' running low on stock.</div>' : '<div class="muted">✅ Stock levels healthy.</div>')
+    + '<div class="muted" style="margin-top:8px;">Ask "this week", "expenses", "low stock"… or tap a chip below.</div>';
+}
+function answerHelp(){
+  return h_l('fa-hand-sparkles','I can track & answer anything!')
+    + 'Try asking:<ul class="ai-list">'
+    + list([
+        ['Today summary', 'sales, profit, top items'],
+        ['This week / This month', '7-day & monthly totals'],
+        ['Profit / Loss', 'net for today, week, month'],
+        ['Expenses', 'today / breakdown by category'],
+        ['Low stock / stock', 'reorder alerts + stock value'],
+        ['Top items', 'best-selling products'],
+        ['Best customer', 'who spends the most'],
+        ['Cash vs UPI', 'payment mode split'],
+        ['Full report', 'complete business snapshot']
+      ]).replace(/^<ul/,'<ul style="margin-top:6px;"')
+    + '&nbsp;';
+}
+
+// ---------- Intent parser ----------
+function ask(q){
+  const t = ' ' + q.toLowerCase().trim() + ' ';
+  if (/(low stock|stock low|reorder|replenish|inventory|stock left|kadai|low)/.test(t) && /stock|reorder|replenish|inventory/.test(t)) return answerStock();
+  if (/stock|inventory/.test(t)) return answerStock();
+  if (/customer|regular|who buys|repeat/.test(t)) return answerCustomers();
+  if (/(cash.*upi|upi.*cash|payment.*mode|mode|online.*cash|payment)/.test(t)) return answerPayments();
+  if (/profit|loss|net |negative|laatam|satta/.test(t)) return answerProfit();
+  if (/expense/.test(t) && /today/.test(t)) return answerExpenses('today');
+  if (/expense|spend|kattanam|kadu/.test(t)) return answerExpenses('month');
+  if (/today|ippo|innaikki/.test(t)) return answerToday();
+  if (/week|7 day|seven day|vaaram/.test(t)) return answerWeek();
+  if (/month|monthly|maadam/.test(t)) return answerMonth();
+  if (/top|best selling|best-selling|popular|item|product|sold/.test(t)) return answerTopItems();
+  if (/bill|avg|average|invoice/.test(t)) return answerBills();
+  if (/shop|store|owner|kadai|shop name|address/.test(t)) return answerShop();
+  if (/all|everything|full|report|total|summary|everything/.test(t)) return answerFull();
+  if (/help|what can|start|hi|hello|vanakkam/.test(t)) return answerHelp();
+  return answerFull() + '<div class="muted" style="margin-top:8px;">(I didn\'t fully understand "' + esc(q) + '" — showing the full report. Try a chip below!)</div>';
+}
+
+// ---------- Send flow ----------
+function send(){
+  const input = document.getElementById('q');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addMsg(esc(q), 'user');
+  const dot = thinking();
+  setTimeout(() => { dot.replaceWith(addMsg(ask(q), 'ai')); }, 420);
+}
+
+// ---------- Quick chips ----------
+const CHIPS = [
+  { icon:'fa-calendar-day', label:'Today', q:'today summary' },
+  { icon:'fa-chart-line',   label:'This Week', q:'this week report' },
+  { icon:'fa-calendar-alt', label:'This Month', q:'monthly report' },
+  { icon:'fa-coins',        label:'Profit', q:'profit today' },
+  { icon:'fa-boxes-stacked',label:'Low Stock', q:'low stock' },
+  { icon:'fa-trophy',       label:'Top Items', q:'top selling items' },
+  { icon:'fa-users',        label:'Customers', q:'best customer' },
+  { icon:'fa-money-bill-wave',label:'Expenses', q:'expenses' },
+  { icon:'fa-brain',        label:'Full Report', q:'full report' }
+];
+function buildChips(){
+  const wrap = document.getElementById('chips');
+  wrap.innerHTML = '';
+  CHIPS.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.innerHTML = '<i class="fa-solid ' + c.icon + '"></i>' + esc(c.label);
+    b.onclick = () => { document.getElementById('q').value = c.q; send(); };
+    wrap.appendChild(b);
+  });
+}
+
+// ---------- Smart alerts (welcome board) ----------
+function buildAlerts(){
+  const wrap = document.getElementById('alerts');
+  const out = [];
+  const t = statCard(allTodayBills());
+  const low = DB.items.filter(i=>stockPerc(i)<20);
+  const te = sum(allTodayExp().map(e=>e.amt));
+  const best = bestDay(allWeekBills());
+
+  if (!t.count) out.push({ i:'fa-moon', t:'No sales yet today — start billing!', c:'warn' });
+  else out.push({ i:'fa-circle-check', t:'Today sales ' + inr(t.total) + ' · ' + t.count + ' bills', c:'ok' });
+  if (te > 0) out.push({ i:'fa-receipt', t:'Expenses today ' + inr(te), c:'warn' });
+  if (low.length) out.push({ i:'fa-triangle-exclamation', t: low.length + ' item' + (low.length>1?'s':'') + ' low on stock', c:'bad' });
+  if (best) out.push({ i:'fa-crown', t:'Best day this week: ' + esc(best[0]) + ' — ' + inr(best[1]), c:'ok' });
+  if (!out.length) out.push({ i:'fa-shield-halved', t:'All systems good — business on track!', c:'ok' });
+
+  wrap.innerHTML = out.map(a =>
+    '<div class="alert ' + a.c + '"><i class="fa-solid ' + a.i + '"></i><span>' + a.t + '</span></div>'
+  ).join('');
+}
+
+// ---------- Welcome ----------
+function boot(){
+  buildChips();
+  buildAlerts();
+  const dot = thinking();
+  setTimeout(() => {
+    dot.replaceWith(addMsg(
+      h_l('fa-robot','Vanakkam, ' + esc(DB.owner) + '! 👋') +
+      'I\'m your <strong>AI Business Assistant</strong>. I watch your bills, stock, expenses &amp; customers and answer instantly — fully offline.<br><span class="muted">Tap a chip below or type a question. Try <em>"today profit"</em> or <em>"low stock"</em>.</span>',
+      'ai'
+    ));
+  }, 500);
+}
+boot();
+</script>
+<!-- LOADER JS -->
+<script>
+  window.addEventListener("load", () => {
+    const loader = document.getElementById("bharatLoader");
+    if (!loader) return;
+    setTimeout(() => {
+      loader.style.opacity = "0";
+      setTimeout(() => {
+        if (loader && loader.parentNode) {
+          loader.parentNode.removeChild(loader);
+        }
+      }, 1300);
+    }, 600);
+  });
+
+  setTimeout(() => {
+    const loader = document.getElementById("bharatLoader");
+    if (loader && loader.parentNode) {
+      loader.style.opacity = "0";
+      setTimeout(() => {
+        if (loader.parentNode) loader.parentNode.removeChild(loader);
+      }, 1000);
+    }
+  }, 6000);
+</script>
+</body>
+</html>
