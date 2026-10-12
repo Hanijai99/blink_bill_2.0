@@ -6,6 +6,7 @@
   <title>Expenses - Blink Bill</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="loader.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="utils.js"></script>
 
 </head>
@@ -24,14 +25,14 @@
   <div class="container">
     <div class="header">
       <h1>Daily Expenses 💸</h1>
-      <button onclick="location.href='index.html'" class="btn-blue">🧾 Back to Billing</button>
+      <button onclick="location.href='index.html'" class="btn-blue"><i class="fa-solid fa-arrow-left"></i> Back to Billing</button>
     </div>
 
     <div class="add-section" style="max-width:600px; margin:40px auto;">
       <input type="date" id="expDate" class="input" value="" />
       <input type="text" id="expDesc" placeholder="Description (e.g., Electricity, Rent)" class="input"/>
       <input type="number" id="expAmt" placeholder="Amount ₹" class="input" step="0.01"/>
-      <button onclick="addExpense()" class="btn-green" style="width:100%; padding:15px; margin-top:20px;">➕ ADD EXPENSE</button>
+      <button onclick="addExpense()" class="btn-green" style="width:100%; padding:15px; margin-top:20px;"><i class="fa-solid fa-plus"></i> ADD EXPENSE</button>
 
       <div id="expList" style="margin-top:30px;"></div>
 
@@ -68,7 +69,7 @@
       todayExp.forEach((e, i) => {
         html += `<li style="padding:10px; border-bottom:1px solid #ddd;">
           ${esc(e.desc)} - ₹${e.amt.toFixed(2)}
-          <button onclick="deleteExpense(${i})" style="float:right; background:var(--red); color:white; border:none; padding:5px 10px; border-radius:8px;">🗑️ Delete</button>
+          <button onclick="deleteExpense(${i})" style="float:right; background:var(--red); color:white; border:none; padding:5px 10px; border-radius:8px;"><i class="fa-solid fa-trash"></i> Delete</button>
         </li>`;
       });
       html += "</ul>";

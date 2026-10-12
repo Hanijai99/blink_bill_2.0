@@ -35,7 +35,10 @@ function showToast(message, isError = false, duration = 2600) {
 // Every page that loads utils.js gets theme support automatically.
 function syncModeBtn(isDark) {
   const btn = document.getElementById("modeBtn");
-  if (btn) btn.innerHTML = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+  if (!btn) return;
+  btn.innerHTML = isDark
+    ? '<i class="fa-solid fa-sun"></i><span>Light Mode</span>'
+    : '<i class="fa-solid fa-moon"></i><span>Dark Mode</span>';
 }
 
 function applyTheme() {

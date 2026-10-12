@@ -78,7 +78,7 @@
 
     <!-- SCAN BUTTON -->
     <div style="text-align:center; margin:40px 0;">
-      <button onclick="startScanner()" class="btn-main" style="padding:30px 60px; font-size:2rem; font-weight:900; border-radius:20px; box-shadow:0 8px 20px rgba(0,0,0,0.2);">
+      <button onclick="startScanner()" class="btn-main" style="padding:18px 14px; font-size:1.15rem; border-radius:18px;">
         <i class="fa-solid fa-barcode"></i><span>TAP TO SCAN ITEMS</span>
       </button>
     </div>
@@ -89,12 +89,12 @@
         <button onclick="closeUpiModal(false)" class="btn-main" style="position:absolute; top:12px; right:12px; flex-direction:row; padding:8px 14px; font-size:.82rem;">
           <i class="fa-solid fa-xmark"></i><span>CLOSE</span>
         </button>
-        <h2 style="color:#14532d; margin:4px 0 2px;">💳 Scan &amp; Pay</h2>
+        <h2 style="color:#14532d; margin:4px 0 2px;"><i class="fa-solid fa-credit-card"></i> Scan &amp; Pay</h2>
         <div id="upiAmt" style="font-size:2.6rem; font-weight:900; color:#16a34a; margin:6px 0;">₹0.00</div>
         <div id="upiQrBox" style="display:flex; align-items:center; justify-content:center; min-height:240px; margin:10px auto;"></div>
         <div id="upiBankInfo" style="font-size:.9rem; color:#475569; margin-bottom:14px;"></div>
         <button onclick="onPaymentReceived()" class="btn-green" style="width:100%; padding:16px; font-size:1.05rem;">
-          ✅ PAYMENT RECEIVED &amp; PRINT BILL
+          <i class="fa-solid fa-circle-check"></i> PAYMENT RECEIVED &amp; PRINT BILL
         </button>
       </div>
     </div>

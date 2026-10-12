@@ -6,6 +6,7 @@
   <title>Manage Stock - Blink Bill</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="loader.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="utils.js"></script>
   <link rel="icon" href="logo195.png" type="image/png" />
 
@@ -38,8 +39,7 @@
     <input type="text" id="search" placeholder="Search products..." class="input" oninput="render()" style="font-size:1.2rem; padding:18px;"/>
 
     <div style="text-align:center; margin:25px 0;">
-      <button onclick="startStockScanner()" class="btn-green" style="padding:20px 40px; font-size:1.5rem; font-weight:900;">
-        📷 SCAN PRODUCT BARCODE
+      <button onclick="startStockScanner()" class="btn-green" style="padding:18px; font-size:1.25rem; font-weight:900; width:100%;"><i class="fa-solid fa-barcode"></i> SCAN PRODUCT BARCODE
       </button>
     </div>
 
@@ -50,15 +50,15 @@
       <input type="number" id="pgst" placeholder="GST %" value="0" class="input" min="0" max="100"/>
       <input type="text" id="pbarcode" placeholder="Barcode (optional)" class="input"/>
       <button onclick="addProduct()" class="btn-green" style="width:100%; padding:18px; font-size:1.3rem; margin-top:10px;">
-        💾 ADD / UPDATE PRODUCT
+        <i class="fa-solid fa-floppy-disk"></i> ADD / UPDATE PRODUCT
       </button>
-      <button onclick="generateOrderList()" class="btn-green" style="width:100%; padding:15px; margin-top:20px;">📋 GENERATE ORDER LIST</button>
+      <button onclick="generateOrderList()" class="btn-green" style="width:100%; padding:15px; margin-top:20px;"><i class="fa-solid fa-list-check"></i> GENERATE ORDER LIST</button>
     </div>
 
     <div id="list" style="margin-top:20px;"></div>
 
     <button onclick="location.href='index.html'" class="btn-stock" style="width:100%; padding:18px; margin-top:30px; font-size:1.3rem;">
-      🧾 Back to Billing
+      <i class="fa-solid fa-arrow-left"></i> Back to Billing
     </button>
   </div>
 
@@ -66,8 +66,7 @@
     <div style="position:relative; width:100%; height:100%;">
       <div id="stock-scanner-video" style="width:100%; height:100%;"></div>
 
-      <button onclick="stopStockScanner()" style="position:absolute; top:20px; right:20px; padding:15px 30px; background:#e53935; color:white; border:none; border-radius:50px; font-size:1.2rem; z-index:100;">
-        ✕ CLOSE
+      <button onclick="stopStockScanner()" style="position:absolute; top:20px; right:20px; padding:15px 30px; background:#e53935; color:white; border:none; border-radius:50px; font-size:1.2rem; z-index:100;"><i class="fa-solid fa-xmark"></i> CLOSE</button>
       </button>
 
       <div style="position:absolute; bottom:60px; left:50%; transform:translateX(-50%); color:white; font-size:1.4rem; background:rgba(0,0,0,0.7); padding:15px 30px; border-radius:20px;">

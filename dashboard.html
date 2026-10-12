@@ -6,6 +6,7 @@
   <title>Blink Bill Dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="loader.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="utils.js"></script>
   <style>
     /* ---------- Dashboard specific styles ---------- */
@@ -135,9 +136,9 @@
         <div class="sub">Welcome back, <b id="dashOwner">Owner</b> — here's your shop at a glance</div>
       </div>
       <div class="hero-actions">
-        <button onclick="location.href='index.html'" class="btn-blue">🧾 Billing</button>
-        <button onclick="toggleMode()" class="btn-hero-light" id="modeBtn">🌙 Dark Mode</button>
-        <button onclick="logout()" class="logout-btn" style="position:static;">🚪 Logout</button>
+        <button onclick="location.href='index.html'" class="btn-blue"><i class="fa-solid fa-file-invoice"></i> Billing</button>
+        <button onclick="toggleMode()" class="btn-hero-light" id="modeBtn"><i class="fa-solid fa-moon"></i><span>Dark Mode</span></button>
+        <button onclick="logout()" class="logout-btn" style="position:static;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
       </div>
     </div>
 

@@ -6,6 +6,7 @@
   <title>Saved Bills - Blink Bill</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="loader.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="icon" href="logo195.png" type="image/png" />
   <script src="utils.js"></script>
   <style>
@@ -72,7 +73,7 @@
   <div class="container">
     <div class="bills-head">
       <h1>🧾 Saved Bills</h1>
-      <button onclick="location.href='index.html'" class="btn-stock" style="padding:9px 14px; font-size:.85rem;">← Billing</button>
+      <button onclick="location.href='index.html'" class="btn-stock" style="padding:9px 14px; font-size:.85rem;"><i class="fa-solid fa-arrow-left"></i> Billing</button>
     </div>
 
     <input type="text" id="search" placeholder="Search by customer, phone or bill #..." class="input" oninput="filter()" autofocus/>
@@ -161,7 +162,7 @@
               <span class="pay-badge ${payClass}">${payLabel}</span>
               &nbsp;${fmtDate(b.date)} &nbsp;•&nbsp; ${b.itemsCount || 0} items &nbsp;•&nbsp; <span class="t-green">#${esc(b.id || "")}</span>
             </div>
-            <button class="btn-toggle" onclick="toggleItems(this)">▼ Show Items</button>
+            <button class="btn-toggle" onclick="toggleItems(this)"><i class="fa-solid fa-list-ul"></i> Show Items</button>
             <div class="bill-items">${itemsHtml}${details}</div>
           </div>`;
       }).join("");
@@ -173,7 +174,7 @@
       const box = btn.nextElementSibling;
       if (box) {
         box.classList.toggle("open");
-        btn.textContent = box.classList.contains("open") ? "▲ Hide Items" : "▼ Show Items";
+        btn.innerHTML = box.classList.contains("open") ? '<i class="fa-solid fa-chevron-up"></i> Hide Items' : '<i class="fa-solid fa-list-ul"></i> Show Items';
       }
     }
 

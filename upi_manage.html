@@ -6,6 +6,7 @@
   <title>Manage UPI - Blink Bill</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="loader.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <script src="utils.js"></script>
   <style>
     .manage-container { padding: 20px; max-width: 600px; margin: 0 auto; }
@@ -58,11 +59,11 @@
       <input type="text" id="upiId" placeholder="UPI ID (e.g., yourname@oksbi)" />
       <input type="text" id="ownerName" placeholder="Owner Name (e.g., Blink Store)" />
       <input type="file" id="qrFile" accept="image/*" />
-      <button onclick="addBank()" class="btn-green">🏦 Add Bank</button>
+      <button onclick="addBank()" class="btn-green"><i class="fa-solid fa-building-columns"></i> Add Bank</button>
     </div>
     
     <button onclick="window.location.href='index.html'" class="btn-green" style="margin-top:20px; width:100%;">
-  🧾 Back to Billing
+  <i class="fa-solid fa-file-invoice"></i> Back to Billing
 </button>
 </div>
 
@@ -92,9 +93,9 @@
           QR: ${bank.qrImage ? 'Set' : 'Not Set'}
           <div class="btn-row">
             <button class="set-active-btn" onclick="setActiveBank(${i})" ${isActive ? 'disabled' : ''}>
-              ${isActive ? '✔️ Active' : '✔️ Set Active'}
+              ${isActive ? '<i class="fa-solid fa-check-double"></i> Active' : '<i class="fa-solid fa-circle-check"></i> Set Active'}
             </button>
-            <button class="delete-btn" onclick="deleteBank(${i})">🗑️ Delete</button>
+            <button class="delete-btn" onclick="deleteBank(${i})"><i class="fa-solid fa-trash"></i> Delete</button>
           </div>
         </div>`;
       });

@@ -6,6 +6,7 @@
   <title>Blink Bill - Seller Login</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="loader.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="icon" href="logo195.png" type="image/png" />
   <link rel="apple-touch-icon" href="logo195.png" />
   <link rel="manifest" href="manifest.json" />
@@ -66,9 +67,9 @@
         <span class="toggle-eye" onclick="togglePassword('pin', this)">👁️</span>
       </div>
 
-      <button onclick="login()" class="btn btn-green big" id="loginBtn">🔐 Login</button>
-      <button onclick="showRegister()" class="btn btn-blue big">📝 Register New Seller</button>
-      <button onclick="showRecover()" class="btn btn-accent big">❓ Forgot?</button>
+      <button onclick="login()" class="btn btn-green big" id="loginBtn"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+      <button onclick="showRegister()" class="btn btn-blue big"><i class="fa-solid fa-user-plus"></i> Register New Seller</button>
+      <button onclick="showRecover()" class="btn btn-accent big"><i class="fa-solid fa-circle-question"></i> Forgot?</button>
     </div>
 
     <div id="registerForm" style="display:none;">
@@ -88,15 +89,15 @@
       <input type="text" id="regShop" placeholder="Shop Name" class="input"/>
       <input type="text" id="regAddr" placeholder="Address" class="input"/>
       <input type="tel" id="regMobile" placeholder="Mobile Number" class="input"/>
-      <button onclick="register()" class="btn btn-green big" id="registerBtn">Create Account</button>
-      <button onclick="backToLogin()" class="btn btn-slate">↩️ Back</button>
+      <button onclick="register()" class="btn btn-green big" id="registerBtn"><i class="fa-solid fa-user-check"></i> Create Account</button>
+      <button onclick="backToLogin()" class="btn btn-slate"><i class="fa-solid fa-arrow-left"></i> Back</button>
     </div>
 
     <div id="recoverForm" style="display:none;">
       <h3>Recover Account</h3>
       <input type="tel" id="recoverMobile" placeholder="Mobile Number" class="input"/>
-      <button onclick="recover()" class="btn btn-green big" id="recoverBtn">🔍 Recover</button>
-      <button onclick="backToLogin()" class="btn btn-slate">↩️ Back</button>
+      <button onclick="recover()" class="btn btn-green big" id="recoverBtn"><i class="fa-solid fa-magnifying-glass"></i> Recover</button>
+      <button onclick="backToLogin()" class="btn btn-slate"><i class="fa-solid fa-arrow-left"></i> Back</button>
     </div>
   </div>
 
