@@ -181,16 +181,37 @@
   <script>
     let html5QrCode = null;
     let scanLock = false;
+    let decodeMisses = 0;
+    let switchedToNative = false;
+    let scannedOnce = false;
+
+    function showScanHint(msg, isErr) { try { showToast(msg, !!isErr); } catch (e) {} }
 
     async function startScanner() {
-      unlockAudio(); // unlock beep sound inside this user gesture
-      document.getElementById('scannerModal').style.display = 'block';
+      try { unlockAudio(); } catch (e) {}
+
+      const modal = document.getElementById('scannerModal');
+      const reader = document.getElementById('scanner-reader');
+      if (!modal || !reader) { showScanHint('❌ Scanner UI missing — reload the page', true); return; }
+      modal.style.display = 'block';
 
       // Load scanner library on demand (Load Manager)
       try {
         await LoadManager.loadScanner();
       } catch (e) {
-        alert("Scanner library load failed! Check your internet and try again.");
+        showScanHint('❌ Scanner library load failed — check internet', true);
+        stopScanner();
+        return;
+      }
+      if (!window.Html5Qrcode || !window.Html5QrcodeSupportedFormats) {
+        alert("Scanner engine failed to load. Please reload the page and retry.");
+        stopScanner();
+        return;
+      }
+
+      // Camera support preflight (clear message instead of a silent failure)
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Camera not supported on this browser.\n\nPlease use Chrome (Android) or Safari (iPhone).");
         stopScanner();
         return;
       }
@@ -200,19 +221,21 @@
         try { await html5QrCode.stop(); html5QrCode.clear(); } catch (e) {}
         html5QrCode = null;
       }
-      document.getElementById('scanner-reader').innerHTML = "";
+      reader.innerHTML = "";
 
-      // Limit decoding to the formats we use. NOTE: we intentionally do NOT
-      // enable useBarCodeDetectorIfSupported — the native detector silently
-      // fails to read codes on many Android devices; the built-in engine is
-      // far more reliable.
+      // Limit decoding to the formats we use. If the built-in engine can't
+      // lock onto anything after a few seconds, we auto-switch to the
+      // browser's native BarcodeDetector (more reliable for 1D barcodes on
+      // Chrome) instead of giving up silently (see onScanFailure below).
       const fmt = window.Html5QrcodeSupportedFormats;
+      const useNative = !!switchedToNative;
       const ctorConfig = fmt ? {
         formatsToSupport: [
           fmt.QR_CODE, fmt.EAN_13, fmt.EAN_8,
           fmt.UPC_A, fmt.UPC_E, fmt.CODE_128, fmt.CODE_39
-        ]
-      } : {};
+        ],
+        useBarCodeDetectorIfSupported: useNative
+      } : { useBarCodeDetectorIfSupported: useNative };
 
       try {
         html5QrCode = new Html5Qrcode("scanner-reader", ctorConfig);
@@ -228,6 +251,8 @@
       const onScanSuccess = (decodedText) => {
         if (scanLock) return;   // prevent duplicate scans of same code
         scanLock = true;
+        scannedOnce = true;
+        decodeMisses = 0;
 
         const barcode = decodedText.trim();
         const product = items.find(i => i.barcode === barcode);
@@ -250,17 +275,36 @@
         setTimeout(() => { scanLock = false; }, 800);
       };
 
+      // Per-frame decode misses: camera running but nothing recognised.
+      const onScanFailure = () => {
+        if (scanLock || !html5QrCode) return;
+        decodeMisses++;
+        // ~9s of no detection with the built-in engine -> switch to native detector
+        if (!switchedToNative && !scannedOnce && decodeMisses > 90) {
+          switchedToNative = true;
+          showScanHint('⚡ Switching to fast scan mode…');
+          restartScanner();
+        } else if (switchedToNative && !scannedOnce && decodeMisses > 240) {
+          showScanHint('💡 Point the camera straight at the barcode, hold steady & keep it well lit', true);
+          decodeMisses = 0;
+        }
+      };
+
       try {
         await html5QrCode.start(
           { facingMode: "environment" },
           config,
           onScanSuccess,
-          () => {} // per-frame decode misses — keep quiet
+          onScanFailure
         );
       } catch (err) {
         console.error("camera start failed", err);
         const msg = err && err.message ? err.message : err;
-        if (navigator.mediaDevices) {
+        const low = String(msg).toLowerCase();
+        const denied = low.indexOf("denied") !== -1 || low.indexOf("notallowed") !== -1 || low.indexOf("permission") !== -1;
+        if (denied) {
+          alert("Camera permission denied!\n\nTap the lock/camera icon next to the address bar (Site settings) -> Camera -> Allow, then retry.");
+        } else if (navigator.mediaDevices) {
           navigator.mediaDevices.getUserMedia({ video: true }).then(() => {
             alert("Camera error: " + msg + "\n\nPlease close other camera apps and retry.");
           }).catch(() => {
@@ -273,12 +317,23 @@
       }
     }
 
+    async function restartScanner() {
+      const old = html5QrCode;
+      html5QrCode = null;
+      if (old) { try { await old.stop(); old.clear(); } catch (e) {} }
+      decodeMisses = 0;
+      try { await startScanner(); } catch (e) { console.error("scanner restart failed", e); }
+    }
+
     async function stopScanner() {
       if (html5QrCode) {
         try { await html5QrCode.stop(); html5QrCode.clear(); } catch (e) {}
         html5QrCode = null;
       }
-      document.getElementById('scannerModal').style.display = 'none';
+      scanLock = false;
+      decodeMisses = 0;
+      const modal = document.getElementById('scannerModal');
+      if (modal) modal.style.display = 'none';
     }
   </script>
 
