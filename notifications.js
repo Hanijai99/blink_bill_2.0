@@ -56,7 +56,7 @@ export async function setupPushNotifications(ownerId) {
     onMessage(messaging, (payload) => {
       const title = payload.notification?.title || "Blink Bill";
       const body = payload.notification?.body || "";
-      new Notification(title, { body, icon: "/logo192.png" });
+      new Notification(title, { body, icon: "/logo195.png" });
     });
   } catch (err) {
     console.log("Push notification setup failed:", err);

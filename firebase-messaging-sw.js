@@ -18,8 +18,8 @@ messaging.onBackgroundMessage((payload) => {
   const title = payload.notification?.title || "Blink Bill";
   const options = {
     body: payload.notification?.body || "",
-    icon: "/logo192.png",
-    badge: "/logo192.png",
+    icon: "/logo195.png",
+    badge: "/logo195.png",
     data: payload.data || {}
   };
   self.registration.showNotification(title, options);
