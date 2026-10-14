@@ -101,3 +101,26 @@ function printCode() {
 
   win.document.close();
 }
+
+// Download the generated QR (PNG) or barcode (SVG). Lives here (not script.js)
+// because qr-generation.html does NOT load script.js.
+async function downloadCode() {
+  const pname = document.getElementById('pname').value.trim() || "Product";
+  const codeType = document.querySelector('input[name="codeType"]:checked').value;
+  const generatedDiv = document.getElementById("generatedCode");
+
+  if (codeType === "qr") {
+    const canvas = generatedDiv.querySelector("canvas");
+    if (canvas) {
+      const blob = await new Promise((r) => canvas.toBlob(r, "image/png"));
+      if (blob) await saveBlob(pname + '_QR_Code.png', blob);
+    }
+  } else {
+    const svg = generatedDiv.querySelector("svg");
+    if (svg) {
+      const serializer = new XMLSerializer();
+      const svgString = serializer.serializeToString(svg);
+      await saveBlob(pname + '_Barcode.svg', new Blob([svgString], { type: 'image/svg+xml' }));
+    }
+  }
+}

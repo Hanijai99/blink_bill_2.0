@@ -170,3 +170,48 @@ const ArchiveDB = (() => {
     }
   };
 })();
+
+// ---------- saveBlob: "Choose where to save" (custom download folder) ----------
+// Browsers never let a website change the default download folder, but
+// Chrome/Edge support showSaveFilePicker() which opens the system "Save as"
+// dialog — so the user picks the folder for EACH download. Every other browser
+// (incl. iPhone Safari) quietly falls back to a normal download.
+// Returns true (saved), false (user cancelled the picker).
+async function saveBlob(filename, blob) {
+  if (window.showSaveFilePicker && window.isSecureContext) {
+    try {
+      const ext = (String(filename).split(".").pop() || "bin").toLowerCase();
+      const mimeMap = {
+        pdf: "application/pdf",
+        xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        json: "application/json",
+        png: "image/png",
+        svg: "image/svg+xml",
+        csv: "text/csv",
+        txt: "text/plain"
+      };
+      const mime = mimeMap[ext] || blob.type || "application/octet-stream";
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{
+          description: (ext.toUpperCase() + " file"),
+          accept: { [mime]: ["." + ext] }
+        }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return true;
+    } catch (e) {
+      if (e && e.name === "AbortError") return false; // user pressed Cancel
+      // any other error -> fall through to the normal download below
+    }
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  return true;
+}

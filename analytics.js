@@ -374,12 +374,12 @@
         };
 
         // export button
-        document.getElementById('aiExport').onclick = ()=>{
+        document.getElementById('aiExport').onclick = async ()=>{
           const horizon = parseInt(document.getElementById('aiHorizon').value)||7;
           const lookback = parseInt(document.getElementById('aiLookback').value)||30;
           const report = generateStockReportDetailed(horizon, lookback);
           const blob = new Blob([JSON.stringify({generatedAt:new Date().toISOString(),owner:localStorage.getItem('owner'),report},null,2)],{type:'application/json'});
-          const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'bharat_ai_report_'+new Date().toISOString().slice(0,10)+'.json'; a.click(); URL.revokeObjectURL(a.href);
+          await saveBlob('bharat_ai_report_'+new Date().toISOString().slice(0,10)+'.json', blob);
         };
 
         // close handler

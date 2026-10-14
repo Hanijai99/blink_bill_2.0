@@ -713,8 +713,11 @@ async function exportData() {
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(billRows.length ? billRows : [{ ID: "" }]), "Bills");
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(expRows.length ? expRows : [{ Date: "" }]), "Expenses");
 
-  XLSX.writeFile(wb, `BlinkBill_Backup_${new Date().toISOString().slice(0, 10)}.xlsx`);
-  showToast("✅ Excel backup downloaded! (Inventory + Bills + Expenses)");
+  const fileName = `BlinkBill_Backup_${new Date().toISOString().slice(0, 10)}.xlsx`;
+  const out = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+  const blob = new Blob([out], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+  const saved = await saveBlob(fileName, blob);
+  if (saved !== false) showToast("✅ Excel backup downloaded! (Inventory + Bills + Expenses)");
 }
 
 function dailyClose() {
@@ -815,33 +818,6 @@ function printCode() {
   setTimeout(() => {
     win.print();
   }, 500);
-}
-
-function downloadCode() {
-  const pname = document.getElementById('pname').value.trim() || "Product";
-  const codeType = document.querySelector('input[name="codeType"]:checked').value;
-  const generatedDiv = document.getElementById("generatedCode");
-
-  if (codeType === "qr") {
-    const canvas = generatedDiv.querySelector("canvas");
-    if (canvas) {
-      const link = document.createElement('a');
-      link.href = canvas.toDataURL("image/png");
-      link.download = pname + '_QR_Code.png';
-      link.click();
-    }
-  } else {
-    const svg = generatedDiv.querySelector("svg");
-    if (svg) {
-      const serializer = new XMLSerializer();
-      const svgString = serializer.serializeToString(svg);
-      const blob = new Blob([svgString], { type: 'image/svg+xml' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = pname + '_Barcode.svg';
-      link.click();
-    }
-  }
 }
 
 function generateDynamicUPIQR(amount) {
@@ -966,7 +942,8 @@ async function downloadPDF() {
 
   doc.text("Total: ₹" + document.getElementById('final').innerText, 20, y + 20);
 
-  doc.save("bill.pdf");
+  const blob = doc.output("blob");
+  await saveBlob("bill.pdf", blob);
 }
 
 function updateCart() {
